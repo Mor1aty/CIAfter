@@ -3,7 +3,7 @@ module moriaty.com/cia/cia-manager
 go 1.13
 
 require (
-	github.com/gin-gonic/gin v1.5.0
+	github.com/micro/go-micro v1.18.0
 	moriaty.com/cia/cia-common v0.0.0-incompatible
 )
 

@@ -15,4 +15,4 @@
 # vendor
 .iml
 target/
-pkg
+pkg/

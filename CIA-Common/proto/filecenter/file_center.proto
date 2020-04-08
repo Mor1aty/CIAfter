@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package filecenter;
+
+// 文件结构体
+message File {
+    int64 id = 1;
+    string fileName = 2;
+    string fileLocation = 3;
+    int64 task = 4;
+    string secret = 5;
+    string createTime = 6;
+}
+
+// 存入文件
+message InsertFileReq {
+    File file = 1;
+}
+
+message InsertFileResp {
+    int64 id = 1;
+}
+
+service InsertFile {
+    rpc InsertFile (InsertFileReq) returns (InsertFileResp) {
+    }
+}
+
+// 根据 id 获取文件
+message FindFileByIdReq {
+    int64 id = 1;
+}
+
+message FindFileByIdResp {
+    File file = 1;
+}
+
+service FindFile {
+    rpc FindFileById (FindFileByIdReq) returns (FindFileByIdResp) {
+    }
+}
+
+// 根据任务 id 和权限 id 获取文件
+message FindFileByTaskAndSecretReq {
+    int64 task = 1;
+    string secret = 2;
+}
+
+message FindFileByTaskAndSecretResp {
+    repeated File files = 1;
+}
+
+service FindTaskFile {
+    rpc FindFileByTaskAndSecret (FindFileByTaskAndSecretReq) returns (FindFileByTaskAndSecretResp) {
+    }
+}

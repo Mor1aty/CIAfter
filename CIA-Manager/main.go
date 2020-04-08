@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"moriaty.com/cia/cia-common/auth"
-	"moriaty.com/cia/cia-common/base/wrap"
-	"moriaty.com/cia/cia-common/valid"
-	"net/http"
+	"github.com/micro/go-micro"
+	pb "moriaty.com/cia/cia-common/proto/filecenter"
 )
 
+/**
+ * @author 16计算机 Moriaty
+ * @version 1.0
+ * @copyright ：Moriaty 版权所有 © 2020
+ * @date 2020/4/7 17:22
+ * @Description TODO
+ * CIA-Manager
+ */
 /**
 	任务管理者 CIA-Manager
   	1. 提供生成机制
@@ -17,36 +23,40 @@ import (
   	4. 提供任务结果获取机制
 */
 
-type UserData struct {
-	account, password string
-}
-
 func main() {
+	service := micro.NewService(
+		micro.Name("manager"),
+	)
+	service.Init()
 
-	// init
-	r := gin.Default()
-	memoryAuth := auth.NewAuth("memory")
+	findFile := pb.NewFindFileService("supporter", service.Client())
+	findFileResp, err := findFile.FindFileById(context.TODO(), &pb.FindFileByIdReq{Id: 1})
+	if err != nil {
+		fmt.Printf("call supporter FindFile failed, err: %v\n", err)
+		return
+	}
+	fmt.Printf("%#v\n", findFileResp.File)
 
-	// 登录测试
-	r.POST("/login", valid.MiddleWare([]valid.Param{
-		{Name: "account", Methods: []valid.Method{valid.PHONE}},
-		{Name: "password"},
-	}), func(c *gin.Context) {
-		params := valid.GetWrapParams(c)
-		fmt.Println(params)
-		token := auth.Token{EffectiveTime: -1, Data: &UserData{
-			account:  params.GetString("account"),
-			password: params.GetString("password"),
-		}}
-		tokenCode := memoryAuth.PutTokenStorage(token)
-		c.JSON(http.StatusOK, wrap.OKExec("登录成功", tokenCode))
-	})
+	findTaskFile := pb.NewFindTaskFileService("supporter", service.Client())
+	findTaskFileResp, err := findTaskFile.FindFileByTaskAndSecret(context.TODO(), &pb.FindFileByTaskAndSecretReq{Task: 1, Secret: "FFFFFF"})
+	if err != nil {
+		fmt.Printf("call supporter FindTaskFile failed, err: %v\n", err)
+		return
+	}
+	for _, file := range findTaskFileResp.Files {
+		fmt.Printf("%#v\n", file)
+	}
 
-	// 访问测试
-	r.GET("/login/after", auth.MiddleWare(memoryAuth, "user"), func(c *gin.Context) {
-		token := auth.GetToken(c, "user")
-		c.JSON(http.StatusOK, wrap.OKExec("获取成功", token))
-	})
-
-	r.Run(":8080")
+	insertFile := pb.NewInsertFileService("supporter", service.Client())
+	insertFileResp, err := insertFile.InsertFile(context.TODO(), &pb.InsertFileReq{File: &pb.File{
+		FileName:     "测试文件3",
+		FileLocation: "/zz/zz/zz",
+		Task:         2,
+		Secret:       "AAAAAA",
+	}})
+	if err != nil {
+		fmt.Printf("call supporter InsertFile failed, err: %v\n", err)
+		return
+	}
+	fmt.Printf("%#v\n", insertFileResp.Id)
 }
