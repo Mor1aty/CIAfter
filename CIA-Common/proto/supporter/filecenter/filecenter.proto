@@ -12,6 +12,15 @@ message File {
     string createTime = 6;
 }
 
+service SupporterFileCenter {
+    rpc InsertFile (InsertFileReq) returns (InsertFileResp) {
+    }
+    rpc FindFileById (FindFileByIdReq) returns (FindFileByIdResp) {
+    }
+    rpc FindFileByTaskAndSecret (FindFileByTaskAndSecretReq) returns (FindFileByTaskAndSecretResp) {
+    }
+}
+
 // 存入文件
 message InsertFileReq {
     File file = 1;
@@ -21,11 +30,6 @@ message InsertFileResp {
     int64 id = 1;
 }
 
-service InsertFile {
-    rpc InsertFile (InsertFileReq) returns (InsertFileResp) {
-    }
-}
-
 // 根据 id 获取文件
 message FindFileByIdReq {
     int64 id = 1;
@@ -33,11 +37,6 @@ message FindFileByIdReq {
 
 message FindFileByIdResp {
     File file = 1;
-}
-
-service FindFile {
-    rpc FindFileById (FindFileByIdReq) returns (FindFileByIdResp) {
-    }
 }
 
 // 根据任务 id 和权限 id 获取文件
@@ -50,7 +49,3 @@ message FindFileByTaskAndSecretResp {
     repeated File files = 1;
 }
 
-service FindTaskFile {
-    rpc FindFileByTaskAndSecret (FindFileByTaskAndSecretReq) returns (FindFileByTaskAndSecretResp) {
-    }
-}

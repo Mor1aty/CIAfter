@@ -1,5 +1,11 @@
 package main
 
+import (
+	"github.com/micro/go-micro"
+	"log"
+	"moriaty.com/cia/cia-filecenter/service"
+)
+
 /**
  * @author 16计算机 Moriaty
  * @version 1.0
@@ -19,4 +25,21 @@ CIA-FileCenter
 */
 func main() {
 
+	// 启动服务
+	server := micro.NewService(
+		micro.Name("filecenter"),
+	)
+	server.Init()
+
+	// 注册文件中心服务
+	err := service.Register(server)
+	if err != nil {
+		log.Fatalf("register service failed, err: %v", err)
+	}
+
+	// 服务运行
+	err = server.Run()
+	if err := server.Run(); err != nil {
+		log.Fatalf("run filecenter failed, err: %v\n", err)
+	}
 }

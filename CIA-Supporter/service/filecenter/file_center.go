@@ -5,7 +5,7 @@ import (
 	"github.com/micro/go-micro"
 	"log"
 	"moriaty.com/cia/cia-common/base/constant"
-	pb "moriaty.com/cia/cia-common/proto/filecenter"
+	pb "moriaty.com/cia/cia-common/proto/supporter/filecenter"
 	"moriaty.com/cia/cia-supporter/bean"
 	"moriaty.com/cia/cia-supporter/dao/filecenter"
 	"time"
@@ -20,35 +20,21 @@ import (
  * 文件中心服务 service
  */
 
+type SupporterFileCenter struct{}
+
 // 注册服务
 func Register(service micro.Service) error {
 	// 注册 InsertFile（存入文件）
-	err := pb.RegisterInsertFileHandler(service.Server(), new(InsertFile))
+	err := pb.RegisterSupporterFileCenterHandler(service.Server(), new(SupporterFileCenter))
 	if err != nil {
-		log.Printf("register InsertFile failed, err: %v\n", err)
-		return err
-	}
-
-	// 注册 FindFile（根据 id 获取文件）
-	err = pb.RegisterFindFileHandler(service.Server(), new(FindFile))
-	if err != nil {
-		log.Printf("register FindFile failed, err: %v\n", err)
-		return err
-	}
-
-	// 注册 FindTaskFile（根据任务 id 和权限 id 获取文件）
-	err = pb.RegisterFindTaskFileHandler(service.Server(), new(FindTaskFile))
-	if err != nil {
-		log.Printf("register FindTaskFile failed, err: %v\n", err)
+		log.Printf("register FileCenter failed, err: %v\n", err)
 		return err
 	}
 	return nil
 }
 
 // 存入文件
-type InsertFile struct{}
-
-func (insertFile *InsertFile) InsertFile(ctx context.Context, req *pb.InsertFileReq, resp *pb.InsertFileResp) (err error) {
+func (sfc *SupporterFileCenter) InsertFile(ctx context.Context, req *pb.InsertFileReq, resp *pb.InsertFileResp) (err error) {
 	id, err := filecenter.InsertFile(&bean.File{
 		FileName:     req.File.FileName,
 		FileLocation: req.File.FileLocation,
@@ -57,20 +43,19 @@ func (insertFile *InsertFile) InsertFile(ctx context.Context, req *pb.InsertFile
 		CreateTime:   time.Now(),
 	})
 	if err != nil {
-		log.Printf("insert file failed, err: %v\n", err)
+		log.Printf("insert file  %s(%s) failed, err: %v\n", req.File.FileName, req.File.FileLocation, err)
 		return err
 	}
 	resp.Id = id
+	log.Printf("insert file %s(%s)[%d] success\n", req.File.FileName, req.File.FileLocation, id)
 	return nil
 }
 
 // 根据 id 获取文件
-type FindFile struct{}
-
-func (findFile *FindFile) FindFileById(ctx context.Context, req *pb.FindFileByIdReq, resp *pb.FindFileByIdResp) (err error) {
+func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFileByIdReq, resp *pb.FindFileByIdResp) (err error) {
 	file, err := filecenter.FindFileById(req.Id)
 	if err != nil {
-		log.Printf("find file by id failed, err: %v\n", err)
+		log.Printf("find file by id [%d] failed, err: %v\n", req.Id, err)
 		return err
 	}
 	resp.File = &pb.File{
@@ -81,16 +66,15 @@ func (findFile *FindFile) FindFileById(ctx context.Context, req *pb.FindFileById
 		Secret:       file.Secret,
 		CreateTime:   file.CreateTime.Format(constant.DATE_TYPE_01),
 	}
+	log.Printf("find file by id [%d] success\n", req.Id)
 	return nil
 }
 
 // 根据任务 id 和权限 id 获取文件
-type FindTaskFile struct{}
-
-func (findTaskFile *FindTaskFile) FindFileByTaskAndSecret(ctx context.Context, req *pb.FindFileByTaskAndSecretReq, resp *pb.FindFileByTaskAndSecretResp) (err error) {
+func (sfc *SupporterFileCenter) FindFileByTaskAndSecret(ctx context.Context, req *pb.FindFileByTaskAndSecretReq, resp *pb.FindFileByTaskAndSecretResp) (err error) {
 	tmpFiles, err := filecenter.FindFileByTaskAndSecret(req.Task, req.Secret)
 	if err != nil {
-		log.Printf("find file by task and secret failed, err: %v\n", err)
+		log.Printf("find file by task [%d] and secret [%s] failed, err: %v\n", req.Task, req.Secret, err)
 		return err
 	}
 	files := make([]*pb.File, len(tmpFiles))
@@ -105,5 +89,6 @@ func (findTaskFile *FindTaskFile) FindFileByTaskAndSecret(ctx context.Context, r
 		}
 	}
 	resp.Files = files
+	log.Printf("find file by task [%d] and secret [%s] success\n", req.Task, req.Secret)
 	return nil
 }

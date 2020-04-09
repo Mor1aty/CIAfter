@@ -16,3 +16,10 @@
 .iml
 target/
 pkg/
+
+/file/*
+!/file/.gitkeep
+
+/temp/*
+!/temp/.gitkeep
+

@@ -38,20 +38,20 @@ func main() {
 	log.Println("init mysql success")
 
 	// 启动服务
-	service := micro.NewService(
+	server := micro.NewService(
 		micro.Name("supporter"),
 	)
-	service.Init()
+	server.Init()
 
 	// 注册文件中心服务
-	err = filecenter.Register(service)
+	err = filecenter.Register(server)
 	if err != nil {
-		log.Fatalf("register service failed, err: %v", err)
+		log.Fatalf("register service filecenter failed, err: %v", err)
 	}
 
 	// 服务运行
-	err = service.Run()
-	if err := service.Run(); err != nil {
+	err = server.Run()
+	if err := server.Run(); err != nil {
 		log.Fatalf("run supporter failed, err: %v\n", err)
 	}
 }
