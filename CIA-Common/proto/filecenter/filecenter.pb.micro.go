@@ -35,6 +35,8 @@ var _ server.Option
 
 type FileCenterService interface {
 	Upload(ctx context.Context, in *UploadReq, opts ...client.CallOption) (*UploadResp, error)
+	FindFile(ctx context.Context, in *FindFileReq, opts ...client.CallOption) (*FindFileResp, error)
+	FindTaskFile(ctx context.Context, in *FindTaskFileReq, opts ...client.CallOption) (*FindTaskFileResp, error)
 }
 
 type fileCenterService struct {
@@ -65,15 +67,39 @@ func (c *fileCenterService) Upload(ctx context.Context, in *UploadReq, opts ...c
 	return out, nil
 }
 
+func (c *fileCenterService) FindFile(ctx context.Context, in *FindFileReq, opts ...client.CallOption) (*FindFileResp, error) {
+	req := c.c.NewRequest(c.name, "FileCenter.FindFile", in)
+	out := new(FindFileResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fileCenterService) FindTaskFile(ctx context.Context, in *FindTaskFileReq, opts ...client.CallOption) (*FindTaskFileResp, error) {
+	req := c.c.NewRequest(c.name, "FileCenter.FindTaskFile", in)
+	out := new(FindTaskFileResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for FileCenter service
 
 type FileCenterHandler interface {
 	Upload(context.Context, *UploadReq, *UploadResp) error
+	FindFile(context.Context, *FindFileReq, *FindFileResp) error
+	FindTaskFile(context.Context, *FindTaskFileReq, *FindTaskFileResp) error
 }
 
 func RegisterFileCenterHandler(s server.Server, hdlr FileCenterHandler, opts ...server.HandlerOption) error {
 	type fileCenter interface {
 		Upload(ctx context.Context, in *UploadReq, out *UploadResp) error
+		FindFile(ctx context.Context, in *FindFileReq, out *FindFileResp) error
+		FindTaskFile(ctx context.Context, in *FindTaskFileReq, out *FindTaskFileResp) error
 	}
 	type FileCenter struct {
 		fileCenter
@@ -88,4 +114,12 @@ type fileCenterHandler struct {
 
 func (h *fileCenterHandler) Upload(ctx context.Context, in *UploadReq, out *UploadResp) error {
 	return h.FileCenterHandler.Upload(ctx, in, out)
+}
+
+func (h *fileCenterHandler) FindFile(ctx context.Context, in *FindFileReq, out *FindFileResp) error {
+	return h.FileCenterHandler.FindFile(ctx, in, out)
+}
+
+func (h *fileCenterHandler) FindTaskFile(ctx context.Context, in *FindTaskFileReq, out *FindTaskFileResp) error {
+	return h.FileCenterHandler.FindTaskFile(ctx, in, out)
 }

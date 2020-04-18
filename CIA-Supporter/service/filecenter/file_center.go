@@ -24,7 +24,6 @@ type SupporterFileCenter struct{}
 
 // 注册服务
 func Register(service micro.Service) error {
-	// 注册 InsertFile（存入文件）
 	err := pb.RegisterSupporterFileCenterHandler(service.Server(), new(SupporterFileCenter))
 	if err != nil {
 		log.Printf("register FileCenter failed, err: %v\n", err)
@@ -55,6 +54,11 @@ func (sfc *SupporterFileCenter) InsertFile(ctx context.Context, req *pb.InsertFi
 func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFileByIdReq, resp *pb.FindFileByIdResp) (err error) {
 	file, err := filecenter.FindFileById(req.Id)
 	if err != nil {
+		if "sql: no rows in result set" == err.Error() {
+			log.Printf("find file by id [%d] not found\n", req.Id)
+			resp.File = nil
+			return nil
+		}
 		log.Printf("find file by id [%d] failed, err: %v\n", req.Id, err)
 		return err
 	}
@@ -67,13 +71,18 @@ func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFi
 		CreateTime:   file.CreateTime.Format(constant.DATE_TYPE_01),
 	}
 	log.Printf("find file by id [%d] success\n", req.Id)
-	return nil
+	return
 }
 
 // 根据任务 id 和权限 id 获取文件
 func (sfc *SupporterFileCenter) FindFileByTaskAndSecret(ctx context.Context, req *pb.FindFileByTaskAndSecretReq, resp *pb.FindFileByTaskAndSecretResp) (err error) {
 	tmpFiles, err := filecenter.FindFileByTaskAndSecret(req.Task, req.Secret)
 	if err != nil {
+		if "sql: no rows in result set" == err.Error() {
+			log.Printf("find file by task [%d] and secret [%s] not found\n", req.Task, req.Secret)
+			resp.Files = nil
+			return nil
+		}
 		log.Printf("find file by task [%d] and secret [%s] failed, err: %v\n", req.Task, req.Secret, err)
 		return err
 	}

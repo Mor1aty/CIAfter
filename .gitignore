@@ -22,4 +22,6 @@ pkg/
 
 /temp/*
 !/temp/.gitkeep
+go.sum
+.idea
 

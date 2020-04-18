@@ -22,6 +22,7 @@ CIA-FileCenter
   3. 数据库存储文件信息
  2、文件获取
   1. 根据权限 id 与任务 id 获取文件
+  2. 根据 id 获取文件
 */
 func main() {
 
@@ -42,4 +43,10 @@ func main() {
 	if err := server.Run(); err != nil {
 		log.Fatalf("run filecenter failed, err: %v\n", err)
 	}
+
+}
+
+func init() {
+	log.SetPrefix("【CIA-FileCenter】")
+	log.SetFlags(log.Lshortfile)
 }

@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package executor;
+
+// 任务结构体
+message Task {
+    int64 taskId = 1;
+    string TaskType = 2;
+    string TaskFile = 3;
+}
+
+// 手机结构体
+message Phone {
+    string id = 1;
+    string client = 2;
+    string testType = 3;
+    string secret = 4;
+    string updateTime = 5;
+}
+
+// 客户端结构体
+message Client {
+    string ip = 1;
+    string testType = 2;
+    string secret = 3;
+    string updateTime = 4;
+}
+
+service SupporterExecutor {
+    rpc FindTaskKey (FindTaskKeyReq) returns (FindTaskKeyResp) {
+    }
+    rpc FindTaskByKey (FindTaskByKeyReq) returns (FindTaskByKeyResp) {
+    }
+    rpc DeleteTaskByKey (DeleteTaskByKeyReq) returns (DeleteTaskByKeyResp) {
+    }
+    rpc PushTestTask (PushTestTaskReq) returns (PushTestTaskResp) {
+    }
+    rpc InsertPhone (InsertPhoneReq) returns (InsertPhoneResp) {
+    }
+    rpc FindClientByIp (FindClientByIpReq) returns (FindClientByIpResp) {
+    }
+}
+
+// 获取任务 key
+message FindTaskKeyReq {
+}
+
+message FindTaskKeyResp {
+    string key = 1;
+}
+
+// 获取任务
+message FindTaskByKeyReq {
+    string key = 1;
+}
+
+message FindTaskByKeyResp {
+    Task task = 1;
+}
+
+// 删除任务
+message DeleteTaskByKeyReq {
+    string key = 1;
+}
+
+message DeleteTaskByKeyResp {
+}
+
+// 推送任务
+message PushTestTaskReq {
+}
+
+message PushTestTaskResp {
+}
+
+// 存入手机信息
+message InsertPhoneReq {
+    repeated Phone phones = 1;
+}
+
+message InsertPhoneResp {
+}
+
+// 根据 ip 获取客户端
+message FindClientByIpReq {
+    string ip = 1;
+}
+
+message FindClientByIpResp {
+    Client client = 1;
+}

@@ -6,6 +6,7 @@ import (
 	"log"
 	"moriaty.com/cia/cia-supporter/config"
 	"moriaty.com/cia/cia-supporter/dao"
+	"moriaty.com/cia/cia-supporter/service/executor"
 	"moriaty.com/cia/cia-supporter/service/filecenter"
 )
 
@@ -20,6 +21,9 @@ import (
 /**
 1、数据库操作服务支持
   1. 文件中心服务支持
+  2. 任务执行者服务支持
+2、Redis 操作服务支持
+  1. 任务执行者服务支持
 */
 func main() {
 	// 加载配置文件
@@ -31,11 +35,18 @@ func main() {
 	log.Println("config success")
 
 	// 初始化 mysql
-	err = dao.InitDB(cfg.MysqlConfig)
+	err = dao.InitMysql(&cfg.MysqlConfig)
 	if err != nil {
 		log.Fatalf("init mysql failed, err: %v", err)
 	}
 	log.Println("init mysql success")
+
+	// 初始化 redis
+	//err = dao.InitRedis(&cfg.RedisConfig)
+	//if err != nil {
+	//	log.Fatalf("init redis failed, err: %v", err)
+	//}
+	log.Println("init redis success")
 
 	// 启动服务
 	server := micro.NewService(
@@ -49,9 +60,20 @@ func main() {
 		log.Fatalf("register service filecenter failed, err: %v", err)
 	}
 
+	// 注册任务执行者服务
+	err = executor.Register(server, &cfg.TaskConfig)
+	if err != nil {
+		log.Fatalf("register service executor failed, err: %v", err)
+	}
+
 	// 服务运行
 	err = server.Run()
 	if err := server.Run(); err != nil {
 		log.Fatalf("run supporter failed, err: %v\n", err)
 	}
+}
+
+func init() {
+	log.SetPrefix("【CIA-Supporter】")
+	log.SetFlags(log.Lshortfile)
 }

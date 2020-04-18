@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/micro/go-micro"
+	"log"
 	"moriaty.com/cia/cia-common/proto/filecenter"
 )
 
@@ -29,10 +31,25 @@ func main() {
 	server.Init()
 
 	fc := filecenter.NewFileCenterService("filecenter", server.Client())
-	fc.Upload(context.TODO(), &filecenter.UploadReq{
-		FileName:         "README.md",
-		TempFileLocation: "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\temp\\README.md",
-		Task:             4,
-		Secret:           "FFFFFF",
-	})
+	ret, err := fc.FindFile(context.TODO(), &filecenter.FindFileReq{Id: 10})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%#v\n", ret.File)
+
+	ret1, err := fc.FindTaskFile(context.TODO(), &filecenter.FindTaskFileReq{Task: 3, Secret: "AAaAAAA"})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, file := range ret1.Files {
+		fmt.Printf("%#v\n", file)
+	}
+
+}
+
+func init() {
+	log.SetPrefix("【CIA-Manager】")
+	log.SetFlags(log.Lshortfile)
 }

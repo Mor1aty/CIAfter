@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/client"
 	uuid "github.com/satori/go.uuid"
 	"io"
 	"log"
@@ -24,14 +23,15 @@ import (
  *  文件中心 service
  */
 
-var currentClient client.Client
+var sfc supporter.SupporterFileCenterService
 
 type FileCenter struct{}
 
 // 注册服务
 func Register(server micro.Service) error {
-	currentClient = server.Client()
-	// 注册 Upload（文件上传）
+
+	sfc = supporter.NewSupporterFileCenterService("supporter", server.Client())
+
 	err := pb.RegisterFileCenterHandler(server.Server(), new(FileCenter))
 	if err != nil {
 		log.Printf("register Upload failed, err: %v\n", err)
@@ -42,8 +42,8 @@ func Register(server micro.Service) error {
 
 // 文件上传
 func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.UploadResp) (err error) {
-	newLocation := fmt.Sprintf("D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\%s_%s",
-		strings.ReplaceAll(uuid.NewV4().String(), "-", ""), req.FileName)
+	newLocation := fmt.Sprintf("D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\%s\\%d\\%s_%s",
+		req.Secret, req.Task, strings.ReplaceAll(uuid.NewV4().String(), "-", ""), req.FileName)
 
 	err = handleFile(req.TempFileLocation, newLocation)
 	removeFile(req.TempFileLocation)
@@ -52,8 +52,6 @@ func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.Up
 		removeFile(newLocation)
 		return
 	}
-
-	sfc := supporter.NewSupporterFileCenterService("supporter", currentClient)
 	insertFileResp, err := sfc.InsertFile(context.TODO(), &supporter.InsertFileReq{File: &supporter.File{
 		FileName:     req.FileName,
 		FileLocation: newLocation,
@@ -61,7 +59,7 @@ func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.Up
 		Secret:       req.Secret,
 	}})
 	if err != nil {
-		fmt.Printf("call supporter InsertFile failed, err: %v\n", err)
+		log.Printf("call supporter InsertFile failed, err: %v\n", err)
 		removeFile(newLocation)
 		return
 	}
@@ -110,4 +108,46 @@ func removeFile(location string) {
 	if err != nil {
 		log.Printf("remove %s failed\n", location)
 	}
+}
+
+// 根据 id 获取文件
+func (fc *FileCenter) FindFile(ctx context.Context, req *pb.FindFileReq, resp *pb.FindFileResp) (err error) {
+	findFileByIdResp, err := sfc.FindFileById(context.TODO(), &supporter.FindFileByIdReq{Id: req.Id})
+	if err != nil {
+		log.Printf("call supporter FindFileById failed, err: %v\n", err)
+		return
+	}
+	if findFileByIdResp.File == nil {
+		resp.File = nil
+	} else {
+		resp.File = &pb.File{
+			Id:           findFileByIdResp.File.Id,
+			FileName:     findFileByIdResp.File.FileName,
+			FileLocation: findFileByIdResp.File.FileLocation,
+			CreateTime:   findFileByIdResp.File.CreateTime,
+		}
+	}
+	log.Printf("FindFile id[%d] success\n", req.Id)
+	return
+}
+
+// 根据权限 id 与任务 id 获取文件
+func (fc *FileCenter) FindTaskFile(ctx context.Context, req *pb.FindTaskFileReq, resp *pb.FindTaskFileResp) (err error) {
+	findTaskFileResp, err := sfc.FindFileByTaskAndSecret(context.TODO(), &supporter.FindFileByTaskAndSecretReq{Task: req.Task, Secret: req.Secret})
+	if err != nil {
+		log.Printf("call supporter FindTaskFileResp failed, err: %v\n", err)
+		return
+	}
+	files := make([]*pb.File, len(findTaskFileResp.Files))
+	for index, file := range findTaskFileResp.Files {
+		files[index] = &pb.File{
+			Id:           file.Id,
+			FileName:     file.FileName,
+			FileLocation: file.FileLocation,
+			CreateTime:   file.CreateTime,
+		}
+	}
+	resp.Files = files
+	log.Printf("FindFile task[%d] secret[%s] success\n", req.Task, req.Secret)
+	return
 }

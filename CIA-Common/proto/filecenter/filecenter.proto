@@ -2,8 +2,20 @@ syntax = "proto3";
 
 package filecenter;
 
+// 文件结构体
+message File {
+    int64 id = 1;
+    string fileName = 2;
+    string fileLocation = 3;
+    string createTime = 4;
+}
+
 service FileCenter {
     rpc Upload (UploadReq) returns (UploadResp) {
+    }
+    rpc FindFile (FindFileReq) returns (FindFileResp) {
+    }
+    rpc FindTaskFile (FindTaskFileReq) returns (FindTaskFileResp) {
     }
 }
 
@@ -16,5 +28,24 @@ message UploadReq {
 }
 
 message UploadResp {
+}
+
+// 根据 id 获取文件
+message FindFileReq {
+    int64 id = 1;
+}
+
+message FindFileResp {
+    File file = 1;
+}
+
+// 根据权限 id 与任务 id 获取文件
+message FindTaskFileReq {
+    int64 task = 1;
+    string secret = 2;
+}
+
+message FindTaskFileResp {
+    repeated File files = 1;
 }
 

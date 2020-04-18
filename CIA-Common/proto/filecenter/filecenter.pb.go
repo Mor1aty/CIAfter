@@ -20,6 +20,70 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+// 文件结构体
+type File struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FileName             string   `protobuf:"bytes,2,opt,name=fileName,proto3" json:"fileName,omitempty"`
+	FileLocation         string   `protobuf:"bytes,3,opt,name=fileLocation,proto3" json:"fileLocation,omitempty"`
+	CreateTime           string   `protobuf:"bytes,4,opt,name=createTime,proto3" json:"createTime,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *File) Reset()         { *m = File{} }
+func (m *File) String() string { return proto.CompactTextString(m) }
+func (*File) ProtoMessage()    {}
+func (*File) Descriptor() ([]byte, []int) {
+	return fileDescriptor_08c9044f220ed6aa, []int{0}
+}
+
+func (m *File) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_File.Unmarshal(m, b)
+}
+func (m *File) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_File.Marshal(b, m, deterministic)
+}
+func (m *File) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_File.Merge(m, src)
+}
+func (m *File) XXX_Size() int {
+	return xxx_messageInfo_File.Size(m)
+}
+func (m *File) XXX_DiscardUnknown() {
+	xxx_messageInfo_File.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_File proto.InternalMessageInfo
+
+func (m *File) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *File) GetFileName() string {
+	if m != nil {
+		return m.FileName
+	}
+	return ""
+}
+
+func (m *File) GetFileLocation() string {
+	if m != nil {
+		return m.FileLocation
+	}
+	return ""
+}
+
+func (m *File) GetCreateTime() string {
+	if m != nil {
+		return m.CreateTime
+	}
+	return ""
+}
+
 // 文件上传
 type UploadReq struct {
 	FileName             string   `protobuf:"bytes,1,opt,name=fileName,proto3" json:"fileName,omitempty"`
@@ -35,7 +99,7 @@ func (m *UploadReq) Reset()         { *m = UploadReq{} }
 func (m *UploadReq) String() string { return proto.CompactTextString(m) }
 func (*UploadReq) ProtoMessage()    {}
 func (*UploadReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_08c9044f220ed6aa, []int{0}
+	return fileDescriptor_08c9044f220ed6aa, []int{1}
 }
 
 func (m *UploadReq) XXX_Unmarshal(b []byte) error {
@@ -94,7 +158,7 @@ func (m *UploadResp) Reset()         { *m = UploadResp{} }
 func (m *UploadResp) String() string { return proto.CompactTextString(m) }
 func (*UploadResp) ProtoMessage()    {}
 func (*UploadResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_08c9044f220ed6aa, []int{1}
+	return fileDescriptor_08c9044f220ed6aa, []int{2}
 }
 
 func (m *UploadResp) XXX_Unmarshal(b []byte) error {
@@ -115,25 +179,206 @@ func (m *UploadResp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_UploadResp proto.InternalMessageInfo
 
+// 根据 id 获取文件
+type FindFileReq struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FindFileReq) Reset()         { *m = FindFileReq{} }
+func (m *FindFileReq) String() string { return proto.CompactTextString(m) }
+func (*FindFileReq) ProtoMessage()    {}
+func (*FindFileReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_08c9044f220ed6aa, []int{3}
+}
+
+func (m *FindFileReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindFileReq.Unmarshal(m, b)
+}
+func (m *FindFileReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindFileReq.Marshal(b, m, deterministic)
+}
+func (m *FindFileReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindFileReq.Merge(m, src)
+}
+func (m *FindFileReq) XXX_Size() int {
+	return xxx_messageInfo_FindFileReq.Size(m)
+}
+func (m *FindFileReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindFileReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FindFileReq proto.InternalMessageInfo
+
+func (m *FindFileReq) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type FindFileResp struct {
+	File                 *File    `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FindFileResp) Reset()         { *m = FindFileResp{} }
+func (m *FindFileResp) String() string { return proto.CompactTextString(m) }
+func (*FindFileResp) ProtoMessage()    {}
+func (*FindFileResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_08c9044f220ed6aa, []int{4}
+}
+
+func (m *FindFileResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindFileResp.Unmarshal(m, b)
+}
+func (m *FindFileResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindFileResp.Marshal(b, m, deterministic)
+}
+func (m *FindFileResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindFileResp.Merge(m, src)
+}
+func (m *FindFileResp) XXX_Size() int {
+	return xxx_messageInfo_FindFileResp.Size(m)
+}
+func (m *FindFileResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindFileResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FindFileResp proto.InternalMessageInfo
+
+func (m *FindFileResp) GetFile() *File {
+	if m != nil {
+		return m.File
+	}
+	return nil
+}
+
+// 根据权限 id 与任务 id 获取文件
+type FindTaskFileReq struct {
+	Task                 int64    `protobuf:"varint,1,opt,name=task,proto3" json:"task,omitempty"`
+	Secret               string   `protobuf:"bytes,2,opt,name=secret,proto3" json:"secret,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FindTaskFileReq) Reset()         { *m = FindTaskFileReq{} }
+func (m *FindTaskFileReq) String() string { return proto.CompactTextString(m) }
+func (*FindTaskFileReq) ProtoMessage()    {}
+func (*FindTaskFileReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_08c9044f220ed6aa, []int{5}
+}
+
+func (m *FindTaskFileReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindTaskFileReq.Unmarshal(m, b)
+}
+func (m *FindTaskFileReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindTaskFileReq.Marshal(b, m, deterministic)
+}
+func (m *FindTaskFileReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindTaskFileReq.Merge(m, src)
+}
+func (m *FindTaskFileReq) XXX_Size() int {
+	return xxx_messageInfo_FindTaskFileReq.Size(m)
+}
+func (m *FindTaskFileReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindTaskFileReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FindTaskFileReq proto.InternalMessageInfo
+
+func (m *FindTaskFileReq) GetTask() int64 {
+	if m != nil {
+		return m.Task
+	}
+	return 0
+}
+
+func (m *FindTaskFileReq) GetSecret() string {
+	if m != nil {
+		return m.Secret
+	}
+	return ""
+}
+
+type FindTaskFileResp struct {
+	Files                []*File  `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FindTaskFileResp) Reset()         { *m = FindTaskFileResp{} }
+func (m *FindTaskFileResp) String() string { return proto.CompactTextString(m) }
+func (*FindTaskFileResp) ProtoMessage()    {}
+func (*FindTaskFileResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_08c9044f220ed6aa, []int{6}
+}
+
+func (m *FindTaskFileResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindTaskFileResp.Unmarshal(m, b)
+}
+func (m *FindTaskFileResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindTaskFileResp.Marshal(b, m, deterministic)
+}
+func (m *FindTaskFileResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindTaskFileResp.Merge(m, src)
+}
+func (m *FindTaskFileResp) XXX_Size() int {
+	return xxx_messageInfo_FindTaskFileResp.Size(m)
+}
+func (m *FindTaskFileResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindTaskFileResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FindTaskFileResp proto.InternalMessageInfo
+
+func (m *FindTaskFileResp) GetFiles() []*File {
+	if m != nil {
+		return m.Files
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*File)(nil), "filecenter.File")
 	proto.RegisterType((*UploadReq)(nil), "filecenter.UploadReq")
 	proto.RegisterType((*UploadResp)(nil), "filecenter.UploadResp")
+	proto.RegisterType((*FindFileReq)(nil), "filecenter.FindFileReq")
+	proto.RegisterType((*FindFileResp)(nil), "filecenter.FindFileResp")
+	proto.RegisterType((*FindTaskFileReq)(nil), "filecenter.FindTaskFileReq")
+	proto.RegisterType((*FindTaskFileResp)(nil), "filecenter.FindTaskFileResp")
 }
 
 func init() { proto.RegisterFile("filecenter.proto", fileDescriptor_08c9044f220ed6aa) }
 
 var fileDescriptor_08c9044f220ed6aa = []byte{
-	// 181 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x48, 0xcb, 0xcc, 0x49,
-	0x4d, 0x4e, 0xcd, 0x2b, 0x49, 0x2d, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x42, 0x88,
-	0x28, 0xd5, 0x73, 0x71, 0x86, 0x16, 0xe4, 0xe4, 0x27, 0xa6, 0x04, 0xa5, 0x16, 0x0a, 0x49, 0x71,
-	0x71, 0x80, 0xa4, 0xfc, 0x12, 0x73, 0x53, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xe0, 0x7c,
-	0x21, 0x2d, 0x2e, 0x81, 0x92, 0xd4, 0xdc, 0x02, 0xb7, 0xcc, 0x9c, 0x54, 0x9f, 0xfc, 0xe4, 0xc4,
-	0x92, 0xcc, 0xfc, 0x3c, 0x09, 0x26, 0xb0, 0x1a, 0x0c, 0x71, 0x21, 0x21, 0x2e, 0x96, 0x92, 0xc4,
-	0xe2, 0x6c, 0x09, 0x66, 0x05, 0x46, 0x0d, 0xe6, 0x20, 0x30, 0x5b, 0x48, 0x8c, 0x8b, 0xad, 0x38,
-	0x35, 0xb9, 0x28, 0xb5, 0x44, 0x82, 0x05, 0xac, 0x0b, 0xca, 0x53, 0xe2, 0xe1, 0xe2, 0x82, 0x39,
-	0xa0, 0xb8, 0xc0, 0xc8, 0x9d, 0x8b, 0x0b, 0x64, 0x92, 0x33, 0xd8, 0x71, 0x42, 0x96, 0x5c, 0x6c,
-	0x10, 0x39, 0x21, 0x51, 0x3d, 0x24, 0x5f, 0xc0, 0x1d, 0x2c, 0x25, 0x86, 0x4d, 0xb8, 0xb8, 0x40,
-	0x89, 0x21, 0x89, 0x0d, 0xec, 0x55, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2b, 0xdf, 0xd0,
-	0xe2, 0xfe, 0x00, 0x00, 0x00,
+	// 340 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x52, 0x4f, 0x4b, 0xfb, 0x40,
+	0x10, 0xfd, 0x6d, 0x92, 0x5f, 0x69, 0xa7, 0x45, 0xc3, 0x80, 0x35, 0xc4, 0x3f, 0x94, 0x45, 0xa4,
+	0x78, 0xe8, 0xa1, 0x7a, 0x51, 0x10, 0x0f, 0x42, 0x2f, 0x8a, 0x87, 0x50, 0x3f, 0xc0, 0x9a, 0x8c,
+	0xb0, 0xf4, 0x4f, 0xd6, 0xec, 0xe2, 0xd5, 0x4f, 0xe9, 0xf7, 0x91, 0xdd, 0x34, 0x6d, 0x52, 0xe3,
+	0x6d, 0x67, 0xde, 0xcc, 0x7b, 0x6f, 0x5e, 0x02, 0xe1, 0xbb, 0x5c, 0x52, 0x4a, 0x6b, 0x43, 0xc5,
+	0x44, 0x15, 0xb9, 0xc9, 0x11, 0x76, 0x1d, 0xfe, 0x09, 0xc1, 0x4c, 0x2e, 0x09, 0x0f, 0xc0, 0x93,
+	0x59, 0xc4, 0x46, 0x6c, 0xec, 0x27, 0x9e, 0xcc, 0x30, 0x86, 0xae, 0x9d, 0x7a, 0x11, 0x2b, 0x8a,
+	0xbc, 0x11, 0x1b, 0xf7, 0x92, 0x6d, 0x8d, 0x1c, 0x06, 0xf6, 0xfd, 0x9c, 0xa7, 0xc2, 0xc8, 0x7c,
+	0x1d, 0xf9, 0x0e, 0x6f, 0xf4, 0xf0, 0x1c, 0x20, 0x2d, 0x48, 0x18, 0x9a, 0xcb, 0x15, 0x45, 0x81,
+	0x9b, 0xa8, 0x75, 0xf8, 0x17, 0xf4, 0x5e, 0xd5, 0x32, 0x17, 0x59, 0x42, 0x1f, 0x0d, 0x31, 0xb6,
+	0x27, 0x76, 0x05, 0xa1, 0xa1, 0x95, 0x9a, 0xd5, 0x05, 0x4b, 0x43, 0xbf, 0xfa, 0x88, 0x10, 0x18,
+	0xa1, 0x17, 0xce, 0x90, 0x9f, 0xb8, 0x37, 0x0e, 0xa1, 0xa3, 0x29, 0x2d, 0xc8, 0x6c, 0x4c, 0x6c,
+	0x2a, 0x3e, 0x00, 0xa8, 0x0c, 0x68, 0xc5, 0xcf, 0xa0, 0x3f, 0x93, 0xeb, 0xcc, 0xb2, 0x59, 0x43,
+	0x7b, 0x69, 0xf0, 0x1b, 0x18, 0xec, 0x60, 0xad, 0xf0, 0x02, 0x02, 0x6b, 0xd0, 0x4d, 0xf4, 0xa7,
+	0xe1, 0xa4, 0x16, 0xb1, 0x9b, 0x71, 0x28, 0xbf, 0x87, 0x43, 0xbb, 0x35, 0x17, 0x7a, 0x51, 0x11,
+	0x57, 0x0e, 0x59, 0xab, 0x43, 0xaf, 0xe1, 0xf0, 0x0e, 0xc2, 0xe6, 0xba, 0x56, 0x78, 0x09, 0xff,
+	0x2d, 0xb5, 0x8e, 0xd8, 0xc8, 0x6f, 0x55, 0x2e, 0xe1, 0xe9, 0x37, 0x03, 0xb0, 0xf5, 0xa3, 0x83,
+	0xf0, 0x16, 0x3a, 0xe5, 0xb1, 0x78, 0x54, 0xdf, 0xd8, 0x7e, 0x81, 0x78, 0xd8, 0xd6, 0xd6, 0x8a,
+	0xff, 0xc3, 0x07, 0xe8, 0x56, 0xa7, 0xe3, 0x71, 0x53, 0x6e, 0x9b, 0x57, 0x1c, 0xb5, 0x03, 0x8e,
+	0xe0, 0xa9, 0xcc, 0xae, 0x3a, 0x03, 0x4f, 0xf6, 0x67, 0x6b, 0xf9, 0xc4, 0xa7, 0x7f, 0x83, 0x96,
+	0xec, 0xad, 0xe3, 0xfe, 0xe0, 0xeb, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x59, 0x69, 0xa6, 0x45,
+	0xd5, 0x02, 0x00, 0x00,
 }
