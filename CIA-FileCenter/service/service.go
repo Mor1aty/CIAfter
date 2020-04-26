@@ -34,7 +34,7 @@ func Register(server micro.Service) error {
 
 	err := pb.RegisterFileCenterHandler(server.Server(), new(FileCenter))
 	if err != nil {
-		log.Printf("register Upload failed, err: %v\n", err)
+		log.Printf("register Upload failed, err: %v", err)
 		return err
 	}
 	return nil
@@ -48,7 +48,7 @@ func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.Up
 	err = handleFile(req.TempFileLocation, newLocation)
 	removeFile(req.TempFileLocation)
 	if err != nil {
-		log.Printf("upload %s(%s) failed, err: %v\n", req.FileName, req.TempFileLocation, err)
+		log.Printf("upload %s(%s) failed, err: %v", req.FileName, req.TempFileLocation, err)
 		removeFile(newLocation)
 		return
 	}
@@ -59,12 +59,12 @@ func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.Up
 		Secret:       req.Secret,
 	}})
 	if err != nil {
-		log.Printf("call supporter InsertFile failed, err: %v\n", err)
+		log.Printf("call supporter InsertFile failed, err: %v", err)
 		removeFile(newLocation)
 		return
 	}
 
-	log.Printf("upload %s(%s)[%d] success\n", req.FileName, newLocation, insertFileResp.Id)
+	log.Printf("upload %s(%s)[%d] success", req.FileName, newLocation, insertFileResp.Id)
 	return
 }
 
@@ -72,14 +72,14 @@ func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.Up
 func handleFile(tempLocation, newLocation string) error {
 	readFile, err := os.Open(tempLocation)
 	if err != nil {
-		log.Printf("open %s failed, err: %v\n", tempLocation, err)
+		log.Printf("open %s failed, err: %v", tempLocation, err)
 		return err
 	}
 	defer readFile.Close()
 
 	writeFile, err := os.OpenFile(newLocation, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
-		log.Printf("open %s failed, err: %v\n", newLocation, err)
+		log.Printf("open %s failed, err: %v", newLocation, err)
 		return err
 	}
 	defer writeFile.Close()
@@ -94,7 +94,7 @@ func handleFile(tempLocation, newLocation string) error {
 			break
 		}
 		if err != nil {
-			log.Printf("%s handle failed, err: %v\n", newLocation, err)
+			log.Printf("%s handle failed, err: %v", newLocation, err)
 			return err
 		}
 		writeFile.WriteString(line)
@@ -106,7 +106,7 @@ func handleFile(tempLocation, newLocation string) error {
 func removeFile(location string) {
 	err := os.Remove(location)
 	if err != nil {
-		log.Printf("remove %s failed\n", location)
+		log.Printf("remove %s failed", location)
 	}
 }
 
@@ -114,7 +114,7 @@ func removeFile(location string) {
 func (fc *FileCenter) FindFile(ctx context.Context, req *pb.FindFileReq, resp *pb.FindFileResp) (err error) {
 	findFileByIdResp, err := sfc.FindFileById(context.TODO(), &supporter.FindFileByIdReq{Id: req.Id})
 	if err != nil {
-		log.Printf("call supporter FindFileById failed, err: %v\n", err)
+		log.Printf("call supporter FindFileById failed, err: %v", err)
 		return
 	}
 	if findFileByIdResp.File == nil {
@@ -127,7 +127,7 @@ func (fc *FileCenter) FindFile(ctx context.Context, req *pb.FindFileReq, resp *p
 			CreateTime:   findFileByIdResp.File.CreateTime,
 		}
 	}
-	log.Printf("FindFile id[%d] success\n", req.Id)
+	log.Printf("FindFile id[%d] success", req.Id)
 	return
 }
 
@@ -135,7 +135,7 @@ func (fc *FileCenter) FindFile(ctx context.Context, req *pb.FindFileReq, resp *p
 func (fc *FileCenter) FindTaskFile(ctx context.Context, req *pb.FindTaskFileReq, resp *pb.FindTaskFileResp) (err error) {
 	findTaskFileResp, err := sfc.FindFileByTaskAndSecret(context.TODO(), &supporter.FindFileByTaskAndSecretReq{Task: req.Task, Secret: req.Secret})
 	if err != nil {
-		log.Printf("call supporter FindTaskFileResp failed, err: %v\n", err)
+		log.Printf("call supporter FindTaskFileResp failed, err: %v", err)
 		return
 	}
 	files := make([]*pb.File, len(findTaskFileResp.Files))
@@ -148,6 +148,6 @@ func (fc *FileCenter) FindTaskFile(ctx context.Context, req *pb.FindTaskFileReq,
 		}
 	}
 	resp.Files = files
-	log.Printf("FindFile task[%d] secret[%s] success\n", req.Task, req.Secret)
+	log.Printf("FindFile task[%d] secret[%s] success", req.Task, req.Secret)
 	return
 }

@@ -37,27 +37,27 @@ func ConsumeTask() {
 	for {
 		findTaskKeyResp, err := se.FindTaskKey(context.TODO(), &supporter.FindTaskKeyReq{})
 		if err != nil {
-			log.Printf("call supporter FindTaskKey failed, err: %v\n", err)
+			log.Printf("call supporter FindTaskKey failed, err: %v", err)
 			return
 		}
 		if findTaskKeyResp.Key == "" {
-			log.Printf("no task to consume\n")
+			log.Printf("no task to consume")
 		} else {
 			findTaskByKeyResp, err := se.FindTaskByKey(context.TODO(), &supporter.FindTaskByKeyReq{Key: findTaskKeyResp.Key})
 			if err != nil {
-				log.Printf("call supporter FindTaskByKey failed, err: %v\n", err)
+				log.Printf("call supporter FindTaskByKey failed, err: %v", err)
 				return
 			}
 			if findTaskByKeyResp.Task == nil {
-				log.Printf("get task by key [%s] not found\n", findTaskKeyResp.Key)
+				log.Printf("get task by key [%s] not found", findTaskKeyResp.Key)
 			} else {
-				log.Printf("consume task [%d] start\n", findTaskByKeyResp.Task.TaskId)
+				log.Printf("consume task [%d] start", findTaskByKeyResp.Task.TaskId)
 				time.Sleep(time.Second * 10)
-				log.Printf("consume task [%d] end\n", findTaskByKeyResp.Task.TaskId)
+				log.Printf("consume task [%d] end", findTaskByKeyResp.Task.TaskId)
 			}
 			err = deleteTask(findTaskKeyResp.Key)
 			if err != nil {
-				log.Printf("call supporter DeleteTaskByKey failed, err: %v\n", err)
+				log.Printf("call supporter DeleteTaskByKey failed, err: %v", err)
 				return
 			}
 		}
@@ -83,31 +83,31 @@ func PushTestTask() {
 func InitPhone() error {
 	ip, err := getIP()
 	if err != nil {
-		log.Printf("get ip failed, err: %v\n", err)
+		log.Printf("get ip failed, err: %v", err)
 		return err
 	}
 
 	findClientByIpResp, err := se.FindClientByIp(context.TODO(), &supporter.FindClientByIpReq{Ip: ip})
 	if err != nil {
-		log.Printf("call supporter FindClientByIp failed, err: %v\n", err)
+		log.Printf("call supporter FindClientByIp failed, err: %v", err)
 		return err
 	}
 
 	cmd := exec.Command("adb", "devices")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Printf("adb std out failed, err: %v\n", err)
+		log.Printf("adb std out failed, err: %v", err)
 		return err
 	}
 	defer stdout.Close()
 	err = cmd.Start()
 	if err != nil {
-		log.Printf("adb exec out failed, err: %v\n", err)
+		log.Printf("adb exec out failed, err: %v", err)
 		return err
 	}
 	out, err := ioutil.ReadAll(stdout)
 	if err != nil {
-		log.Printf("adb out read failed, err: %v\n", err)
+		log.Printf("adb out read failed, err: %v", err)
 		return err
 	}
 
@@ -126,13 +126,13 @@ func InitPhone() error {
 		}
 	}
 	if len(phones) == 0 {
-		log.Printf("no phone needs to be registered\n")
+		log.Printf("no phone needs to be registered")
 		return nil
 	}
 
 	_, err = se.InsertPhone(context.TODO(), &supporter.InsertPhoneReq{Phones: phones})
 	if err != nil {
-		log.Printf("call supporter InsertPhone failed, err: %v\n", err)
+		log.Printf("call supporter InsertPhone failed, err: %v", err)
 		return err
 	}
 	return nil

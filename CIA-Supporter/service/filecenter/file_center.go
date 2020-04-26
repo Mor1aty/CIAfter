@@ -26,7 +26,7 @@ type SupporterFileCenter struct{}
 func Register(service micro.Service) error {
 	err := pb.RegisterSupporterFileCenterHandler(service.Server(), new(SupporterFileCenter))
 	if err != nil {
-		log.Printf("register FileCenter failed, err: %v\n", err)
+		log.Printf("register FileCenter failed, err: %v", err)
 		return err
 	}
 	return nil
@@ -42,11 +42,11 @@ func (sfc *SupporterFileCenter) InsertFile(ctx context.Context, req *pb.InsertFi
 		CreateTime:   time.Now(),
 	})
 	if err != nil {
-		log.Printf("insert file  %s(%s) failed, err: %v\n", req.File.FileName, req.File.FileLocation, err)
+		log.Printf("insert file  %s(%s) failed, err: %v", req.File.FileName, req.File.FileLocation, err)
 		return err
 	}
 	resp.Id = id
-	log.Printf("insert file %s(%s)[%d] success\n", req.File.FileName, req.File.FileLocation, id)
+	log.Printf("insert file %s(%s)[%d] success", req.File.FileName, req.File.FileLocation, id)
 	return nil
 }
 
@@ -55,11 +55,11 @@ func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFi
 	file, err := filecenter.FindFileById(req.Id)
 	if err != nil {
 		if "sql: no rows in result set" == err.Error() {
-			log.Printf("find file by id [%d] not found\n", req.Id)
+			log.Printf("find file by id [%d] not found", req.Id)
 			resp.File = nil
 			return nil
 		}
-		log.Printf("find file by id [%d] failed, err: %v\n", req.Id, err)
+		log.Printf("find file by id [%d] failed, err: %v", req.Id, err)
 		return err
 	}
 	resp.File = &pb.File{
@@ -70,7 +70,7 @@ func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFi
 		Secret:       file.Secret,
 		CreateTime:   file.CreateTime.Format(constant.DATE_TYPE_01),
 	}
-	log.Printf("find file by id [%d] success\n", req.Id)
+	log.Printf("find file by id [%d] success", req.Id)
 	return
 }
 
@@ -78,13 +78,13 @@ func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFi
 func (sfc *SupporterFileCenter) FindFileByTaskAndSecret(ctx context.Context, req *pb.FindFileByTaskAndSecretReq, resp *pb.FindFileByTaskAndSecretResp) (err error) {
 	tmpFiles, err := filecenter.FindFileByTaskAndSecret(req.Task, req.Secret)
 	if err != nil {
-		if "sql: no rows in result set" == err.Error() {
-			log.Printf("find file by task [%d] and secret [%s] not found\n", req.Task, req.Secret)
-			resp.Files = nil
-			return nil
-		}
-		log.Printf("find file by task [%d] and secret [%s] failed, err: %v\n", req.Task, req.Secret, err)
+		log.Printf("find file by task [%d] and secret [%s] failed, err: %v", req.Task, req.Secret, err)
 		return err
+	}
+	if len(tmpFiles) == 0 {
+		log.Printf("find file by task [%d] and secret [%s] not found", req.Task, req.Secret)
+		resp.Files = nil
+		return nil
 	}
 	files := make([]*pb.File, len(tmpFiles))
 	for index, tmpFile := range tmpFiles {
@@ -98,6 +98,6 @@ func (sfc *SupporterFileCenter) FindFileByTaskAndSecret(ctx context.Context, req
 		}
 	}
 	resp.Files = files
-	log.Printf("find file by task [%d] and secret [%s] success\n", req.Task, req.Secret)
+	log.Printf("find file by task [%d] and secret [%s] success", req.Task, req.Secret)
 	return nil
 }

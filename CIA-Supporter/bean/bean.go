@@ -30,11 +30,32 @@ type Phone struct {
 	UpdateTime time.Time `db:"update_time"`
 }
 
-// 客户端表（client）
+// 客户端表（mysql）
 type Client struct {
 	Ip         string    `db:"ip"`
 	TestType   string    `db:"test_type"`
 	Secret     string    `db:"secret"`
+	UpdateTime time.Time `db:"update_time"`
+}
+
+// 业务表（business）
+type Business struct {
+	Secret         string    `db:"secret"`
+	SecretValue    string    `db:"secret_value"`
+	ApkName        string    `db:"apk_name"`
+	PullFrequency  int64     `db:"pull_frequency"`
+	CurrentEdition float32   `db:"current_edition"`
+	FileUrl        string    `db:"file_url"`
+	IsStop         uint8     `db:"is_stop"`
+	UpdateTime     time.Time `db:"update_time"`
+}
+
+// 业务测试表（business_test）
+type BusinessTest struct {
+	Id         int64     `db:"id"`
+	Secret     string    `db:"secret"`
+	TestType   string    `db:"test_type"`
+	TestOption int64     `db:"test_option"`
 	UpdateTime time.Time `db:"update_time"`
 }
 

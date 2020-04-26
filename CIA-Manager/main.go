@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/micro/go-micro"
 	"log"
-	"moriaty.com/cia/cia-common/proto/filecenter"
+	"moriaty.com/cia/cia-common/proto/supporter/publisher"
 )
 
 /**
@@ -30,22 +30,33 @@ func main() {
 	)
 	server.Init()
 
-	fc := filecenter.NewFileCenterService("filecenter", server.Client())
-	ret, err := fc.FindFile(context.TODO(), &filecenter.FindFileReq{Id: 10})
+	sp := publisher.NewSupporterPublisherService("supporter", server.Client())
+	findAllBusinessResp, err := sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{All: true})
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Printf("call supporter publisher failed, err: %v", err)
 	}
-	fmt.Printf("%#v\n", ret.File)
+	for _, business := range findAllBusinessResp.Businesses {
+		fmt.Printf("%#v", business)
+	}
+	fmt.Println("--------------------------------------------")
 
-	ret1, err := fc.FindTaskFile(context.TODO(), &filecenter.FindTaskFileReq{Task: 3, Secret: "AAaAAAA"})
+	findAllBusinessResp, err = sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{IsStop: true})
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Printf("call supporter publisher failed, err: %v", err)
 	}
-	for _, file := range ret1.Files {
-		fmt.Printf("%#v\n", file)
+	for _, business := range findAllBusinessResp.Businesses {
+		fmt.Printf("%#v\n", business)
 	}
+	fmt.Println("--------------------------------------------")
+
+	findAllBusinessResp, err = sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{})
+	if err != nil {
+		log.Printf("call supporter publisher failed, err: %v", err)
+	}
+	for _, business := range findAllBusinessResp.Businesses {
+		fmt.Printf("%#v\n", business)
+	}
+	fmt.Println("--------------------------------------------")
 
 }
 

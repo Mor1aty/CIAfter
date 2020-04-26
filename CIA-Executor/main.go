@@ -33,12 +33,12 @@ func main() {
 	// 初始化 service
 	err := service.Init(server)
 	if err != nil {
-		log.Fatalf("init service failed, err: %v\n", err)
+		log.Fatalf("init service failed, err: %v", err)
 	}
 
 	err = service.InitPhone()
 	if err != nil {
-		log.Fatalf("init phone failed, err: %v\n", err)
+		log.Fatalf("init phone failed, err: %v", err)
 	}
 
 	service.PushTestTask()

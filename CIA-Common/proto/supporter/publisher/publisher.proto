@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package publisher;
+
+// 业务测试结构体
+message BusinessTest {
+    int64 id = 1;
+    string secret = 2;
+    string testType = 3;
+    int64 testOption = 4;
+    string updateTime = 5;
+}
+
+// 业务结构体
+message Business {
+    string secret = 1;
+    string secretValue = 2;
+    string apkName = 3;
+    int64 pullFrequency = 4;
+    float currentEdition = 5;
+    string fileUrl = 6;
+    bool isStop = 7;
+    string updateTime = 8;
+    repeated BusinessTest businessTests = 9;
+}
+
+service SupporterPublisher {
+    rpc FindAllBusiness (FindAllBusinessReq) returns (FindAllBusinessResp) {
+    }
+    rpc UpdateBusinessEdition (UpdateBusinessEditionReq) returns (UpdateBusinessEditionResp) {
+    }
+}
+
+// 获取所有业务
+message FindAllBusinessReq {
+    bool all = 1;
+    bool isStop = 2;
+}
+
+message FindAllBusinessResp {
+    repeated Business businesses = 1;
+}
+
+// 更新业务版本
+message UpdateBusinessEditionReq {
+    float edition = 1;
+    string secret = 2;
+}
+
+// 更新业务版本
+message UpdateBusinessEditionResp {
+}

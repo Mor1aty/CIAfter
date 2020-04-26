@@ -30,7 +30,7 @@ type SupporterExecutor struct{}
 func Register(service micro.Service, cfg *config.TaskConfig) error {
 	err := pb.RegisterSupporterExecutorHandler(service.Server(), new(SupporterExecutor))
 	if err != nil {
-		log.Printf("register Executor failed, err: %v\n", err)
+		log.Printf("register Executor failed, err: %v", err)
 		return err
 	}
 	taskCfg = cfg
@@ -43,14 +43,14 @@ func (se *SupporterExecutor) FindTaskKey(ctx context.Context, req *pb.FindTaskKe
 	id, err := executor.PopId(idsKey)
 	if err != nil {
 		if "redis: nil" == err.Error() {
-			log.Printf("task key not found\n")
+			log.Printf("task key not found")
 			return nil
 		}
-		log.Printf("find task key [%s] failed, err: %v\n", idsKey, err)
+		log.Printf("find task key [%s] failed, err: %v", idsKey, err)
 		return err
 	}
 	resp.Key = fmt.Sprintf("%s_%d", taskCfg.Key, id)
-	log.Printf("find task key [%s] success\n", idsKey)
+	log.Printf("find task key [%s] success", idsKey)
 	return nil
 }
 
@@ -59,11 +59,11 @@ func (se *SupporterExecutor) FindTaskByKey(ctx context.Context, req *pb.FindTask
 	task, err := executor.FindTaskByKey(req.Key)
 	if err != nil {
 		if "redis: nil" == err.Error() {
-			log.Printf("task by key [%s] not found\n", req.Key)
+			log.Printf("task by key [%s] not found", req.Key)
 			resp.Task = nil
 			return nil
 		}
-		log.Printf("find task by key [%s] failed, err: %v\n", req.Key, err)
+		log.Printf("find task by key [%s] failed, err: %v", req.Key, err)
 		return err
 	}
 	resp.Task = &pb.Task{
@@ -71,7 +71,7 @@ func (se *SupporterExecutor) FindTaskByKey(ctx context.Context, req *pb.FindTask
 		TaskType: task.TaskType,
 		TaskFile: task.TaskFile,
 	}
-	log.Printf("find task by key [%s] success\n", req.Key)
+	log.Printf("find task by key [%s] success", req.Key)
 	return nil
 }
 
@@ -79,10 +79,10 @@ func (se *SupporterExecutor) FindTaskByKey(ctx context.Context, req *pb.FindTask
 func (se *SupporterExecutor) DeleteTaskByKey(ctx context.Context, req *pb.DeleteTaskByKeyReq, resp *pb.DeleteTaskByKeyResp) (err error) {
 	err = executor.DeleteTaskByKey(req.Key)
 	if err != nil {
-		log.Printf("delete task by key [%s] failed, err: %v\n", req.Key, err)
+		log.Printf("delete task by key [%s] failed, err: %v", req.Key, err)
 		return err
 	}
-	log.Printf("delete task by key [%s] success\n", req.Key)
+	log.Printf("delete task by key [%s] success", req.Key)
 	return nil
 }
 
@@ -106,24 +106,24 @@ func (se *SupporterExecutor) InsertPhone(ctx context.Context, req *pb.InsertPhon
 					UpdateTime: time.Now(),
 				})
 				if err != nil {
-					log.Printf("insert phone %s failed, err: %v\n", phone.Id, err)
+					log.Printf("insert phone %s failed, err: %v", phone.Id, err)
 					return err
 				}
 			} else {
-				log.Printf("find phone by id [%s] failed, err: %v\n", phone.Id, err)
+				log.Printf("find phone by id [%s] failed, err: %v", phone.Id, err)
 				return err
 			}
 		} else {
 			if tempPhone.Client != phone.Client {
 				err = executor.UpdatePhoneClient(phone.Id, phone.Client)
 				if err != nil {
-					log.Printf("update phone [%s] client [%s] failed, err: %v\n", phone.Id, phone.Client, err)
+					log.Printf("update phone [%s] client [%s] failed, err: %v", phone.Id, phone.Client, err)
 					return err
 				}
 			}
 		}
 	}
-	log.Printf("insert phones success\n")
+	log.Printf("insert phones success")
 	return nil
 }
 
@@ -132,11 +132,11 @@ func (se *SupporterExecutor) FindClientByIp(ctx context.Context, req *pb.FindCli
 	client, err := executor.FindClientByIp(req.Ip)
 	if err != nil {
 		if "sql: no rows in result set" == err.Error() {
-			log.Printf("find client by ip [%s] not found\n", req.Ip)
+			log.Printf("find client by ip [%s] not found", req.Ip)
 			resp.Client = nil
 			return nil
 		}
-		log.Printf("find client by ip [%s] failed, err: %v\n", req.Ip, err)
+		log.Printf("find client by ip [%s] failed, err: %v", req.Ip, err)
 		return err
 	}
 	resp.Client = &pb.Client{
@@ -145,6 +145,6 @@ func (se *SupporterExecutor) FindClientByIp(ctx context.Context, req *pb.FindCli
 		Secret:     client.Secret,
 		UpdateTime: client.UpdateTime.Format(constant.DATE_TYPE_01),
 	}
-	log.Printf("find client by ip [%s] success\n", req.Ip)
+	log.Printf("find client by ip [%s] success", req.Ip)
 	return
 }

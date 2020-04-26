@@ -41,7 +41,7 @@ func main() {
 	// 服务运行
 	err = server.Run()
 	if err := server.Run(); err != nil {
-		log.Fatalf("run filecenter failed, err: %v\n", err)
+		log.Fatalf("run filecenter failed, err: %v", err)
 	}
 
 }

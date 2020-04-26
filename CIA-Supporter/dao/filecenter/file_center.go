@@ -20,12 +20,12 @@ func InsertFile(file *bean.File) (int64, error) {
 	sqlStr := "INSERT INTO file(file_name, file_location, task, secret, create_time) VALUES (?, ?, ?, ?, ?)"
 	ret, err := dao.DB.Exec(sqlStr, file.FileName, file.FileLocation, file.Task, file.Secret, file.CreateTime)
 	if err != nil {
-		log.Printf("insert file failed, err: %v\n", err)
+		log.Printf("insert file failed, err: %v", err)
 		return 0, err
 	}
 	id, err := ret.LastInsertId()
 	if err != nil {
-		log.Printf("get last insert Id failed, err: %v\n", err)
+		log.Printf("get last insert Id failed, err: %v", err)
 		return 0, err
 	}
 	return id, nil
@@ -37,7 +37,7 @@ func FindFileById(id int64) (*bean.File, error) {
 	var file bean.File
 	err := dao.DB.Get(&file, sqlStr, id)
 	if err != nil {
-		log.Printf("get file by id failed, err: %v\n", err)
+		log.Printf("get file by id failed, err: %v", err)
 		return nil, err
 	}
 	return &file, nil
@@ -49,7 +49,7 @@ func FindFileByTaskAndSecret(task int64, secret string) ([]*bean.File, error) {
 	var files []*bean.File
 	err := dao.DB.Select(&files, sqlStr, task, secret)
 	if err != nil {
-		log.Printf("get file by task and secret failed, err: %v\n", err)
+		log.Printf("get file by task and secret failed, err: %v", err)
 		return nil, err
 	}
 	return files, nil

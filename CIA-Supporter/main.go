@@ -8,6 +8,7 @@ import (
 	"moriaty.com/cia/cia-supporter/dao"
 	"moriaty.com/cia/cia-supporter/service/executor"
 	"moriaty.com/cia/cia-supporter/service/filecenter"
+	"moriaty.com/cia/cia-supporter/service/publisher"
 )
 
 /**
@@ -66,10 +67,16 @@ func main() {
 		log.Fatalf("register service executor failed, err: %v", err)
 	}
 
+	// 注册任务发布者服务
+	err = publisher.Register(server)
+	if err != nil {
+		log.Fatalf("register service publisher failed, err: %v", err)
+	}
+
 	// 服务运行
 	err = server.Run()
 	if err := server.Run(); err != nil {
-		log.Fatalf("run supporter failed, err: %v\n", err)
+		log.Fatalf("run supporter failed, err: %v", err)
 	}
 }
 

@@ -22,12 +22,12 @@ import (
 func PopId(idsKey string) (int64, error) {
 	idStr, err := dao.RDB.RPop(idsKey).Result()
 	if err != nil {
-		log.Printf("get task id failed, err: %v\n", err)
+		log.Printf("get task id failed, err: %v", err)
 		return 0, err
 	}
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		log.Printf("task id [%s] error, err: %v\n", idStr, err)
+		log.Printf("task id [%s] error, err: %v", idStr, err)
 		return 0, err
 	}
 	return id, nil
@@ -37,13 +37,13 @@ func PopId(idsKey string) (int64, error) {
 func FindTaskByKey(key string) (*bean.Task, error) {
 	newTask, err := dao.RDB.Get(key).Result()
 	if err != nil {
-		log.Printf("get task [%s] failed, err: %v\n", key, err)
+		log.Printf("get task [%s] failed, err: %v", key, err)
 		return nil, err
 	}
 	var task bean.Task
 	err = json.Unmarshal([]byte(newTask), &task)
 	if err != nil {
-		log.Printf("json unmarshal task [%s] failed, err: %v\n", key, err)
+		log.Printf("json unmarshal task [%s] failed, err: %v", key, err)
 		return nil, err
 	}
 	return &task, nil
@@ -53,7 +53,7 @@ func FindTaskByKey(key string) (*bean.Task, error) {
 func DeleteTaskByKey(key string) error {
 	err := dao.RDB.Del(key).Err()
 	if err != nil {
-		log.Printf("delete task [%s] failed, err: %v\n", key, err)
+		log.Printf("delete task [%s] failed, err: %v", key, err)
 		return err
 	}
 	return nil
@@ -81,7 +81,7 @@ func FindPhoneById(id string) (*bean.Phone, error) {
 	var phone bean.Phone
 	err := dao.DB.Get(&phone, sqlStr, id)
 	if err != nil {
-		log.Printf("get phone by id failed, err: %v\n", err)
+		log.Printf("get phone by id failed, err: %v", err)
 		return nil, err
 	}
 	return &phone, nil
@@ -89,11 +89,11 @@ func FindPhoneById(id string) (*bean.Phone, error) {
 
 // 存入手机信息
 func InsertPhone(phone *bean.Phone) error {
-	log.Printf("%#v\n", phone)
+	log.Printf("%#v", phone)
 	sqlStr := "INSERT INTO phone(id, client, test_type, secret, update_time) VALUES (?, ?, ?, ?, ?)"
 	_, err := dao.DB.Exec(sqlStr, phone.Id, phone.Client, phone.TestType, phone.Secret, phone.UpdateTime)
 	if err != nil {
-		log.Printf("insert phone failed, err: %v\n", err)
+		log.Printf("insert phone failed, err: %v", err)
 		return err
 	}
 	return nil
@@ -104,7 +104,7 @@ func UpdatePhoneClient(id, client string) error {
 	sqlStr := "UPDATE phone SET client = ? WHERE id = ?"
 	_, err := dao.DB.Exec(sqlStr, client, id)
 	if err != nil {
-		log.Printf("update phone (client) failed, err: %v\n", err)
+		log.Printf("update phone (client) failed, err: %v", err)
 		return err
 	}
 	return nil
@@ -116,7 +116,7 @@ func FindClientByIp(ip string) (*bean.Client, error) {
 	var client bean.Client
 	err := dao.DB.Get(&client, sqlStr, ip)
 	if err != nil {
-		log.Printf("get client by ip failed, err: %v\n", err)
+		log.Printf("get client by ip failed, err: %v", err)
 		return nil, err
 	}
 	return &client, nil
