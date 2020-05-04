@@ -3,11 +3,11 @@ package service
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"github.com/micro/go-micro"
 	uuid "github.com/satori/go.uuid"
 	"io"
 	"log"
+	"moriaty.com/cia/cia-common/base/constant"
 	pb "moriaty.com/cia/cia-common/proto/filecenter"
 	supporter "moriaty.com/cia/cia-common/proto/supporter/filecenter"
 	"os"
@@ -29,9 +29,7 @@ type FileCenter struct{}
 
 // 注册服务
 func Register(server micro.Service) error {
-
 	sfc = supporter.NewSupporterFileCenterService("supporter", server.Client())
-
 	err := pb.RegisterFileCenterHandler(server.Server(), new(FileCenter))
 	if err != nil {
 		log.Printf("register Upload failed, err: %v", err)
@@ -42,40 +40,44 @@ func Register(server micro.Service) error {
 
 // 文件上传
 func (fc *FileCenter) Upload(ctx context.Context, req *pb.UploadReq, resp *pb.UploadResp) (err error) {
-	newLocation := fmt.Sprintf("D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\%s\\%d\\%s_%s",
-		req.Secret, req.Task, strings.ReplaceAll(uuid.NewV4().String(), "-", ""), req.FileName)
-
-	err = handleFile(req.TempFileLocation, newLocation)
-	removeFile(req.TempFileLocation)
+	newLocation := constant.FILE_LOCATION + req.Secret + string(os.PathSeparator) + strings.ReplaceAll(uuid.NewV4().String(), "-", "") + "_" + req.FileName
+	err = handleFile(req.TempFileLocation, newLocation, req.Secret)
 	if err != nil {
 		log.Printf("upload %s(%s) failed, err: %v", req.FileName, req.TempFileLocation, err)
-		removeFile(newLocation)
 		return
 	}
 	insertFileResp, err := sfc.InsertFile(context.TODO(), &supporter.InsertFileReq{File: &supporter.File{
 		FileName:     req.FileName,
 		FileLocation: newLocation,
-		Task:         req.Task,
 		Secret:       req.Secret,
 	}})
 	if err != nil {
 		log.Printf("call supporter InsertFile failed, err: %v", err)
-		removeFile(newLocation)
 		return
 	}
-
+	resp.Id = insertFileResp.Id
+	resp.FileLocation = newLocation
 	log.Printf("upload %s(%s)[%d] success", req.FileName, newLocation, insertFileResp.Id)
 	return
 }
 
 // 处理文件
-func handleFile(tempLocation, newLocation string) error {
+func handleFile(tempLocation, newLocation, secret string) error {
 	readFile, err := os.Open(tempLocation)
 	if err != nil {
 		log.Printf("open %s failed, err: %v", tempLocation, err)
 		return err
 	}
 	defer readFile.Close()
+
+	_, err = os.Stat(constant.FILE_LOCATION + secret)
+	if os.IsNotExist(err) {
+		err = os.Mkdir(constant.FILE_LOCATION+secret, os.ModePerm)
+		if err != nil {
+			log.Printf("create dir [%s] failed, err: %v", secret, err)
+			return err
+		}
+	}
 
 	writeFile, err := os.OpenFile(newLocation, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
@@ -99,15 +101,8 @@ func handleFile(tempLocation, newLocation string) error {
 		}
 		writeFile.WriteString(line)
 	}
-	return nil
-}
 
-// 删除文件
-func removeFile(location string) {
-	err := os.Remove(location)
-	if err != nil {
-		log.Printf("remove %s failed", location)
-	}
+	return nil
 }
 
 // 根据 id 获取文件

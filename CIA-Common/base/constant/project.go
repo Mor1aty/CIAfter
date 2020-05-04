@@ -20,4 +20,9 @@ const (
 	 * 测试脚本位置
 	 */
 	TEST_SCRIPTS_LOCATION = "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\scripts\\"
+
+	/**
+	 * 文件位置
+	 */
+	FILE_LOCATION = "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\"
 )

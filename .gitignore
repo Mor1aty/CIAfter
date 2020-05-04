@@ -18,8 +18,8 @@ target/
 pkg/
 
 /file/*
-!/file/.gitkeep
 !/file/scripts/
+!/file/.gitkeep
 
 /temp/*
 !/temp/.gitkeep

@@ -2,7 +2,6 @@ package executor
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"moriaty.com/cia/cia-supporter/bean"
 	"moriaty.com/cia/cia-supporter/dao"
@@ -34,13 +33,13 @@ func PopId(idsKey string) (int64, error) {
 }
 
 // 根据 key 获取任务
-func FindTaskByKey(key string) (*bean.Task, error) {
+func FindTaskByKey(key string) (*bean.TaskRedis, error) {
 	newTask, err := dao.RDB.Get(key).Result()
 	if err != nil {
 		log.Printf("get task [%s] failed, err: %v", key, err)
 		return nil, err
 	}
-	var task bean.Task
+	var task bean.TaskRedis
 	err = json.Unmarshal([]byte(newTask), &task)
 	if err != nil {
 		log.Printf("json unmarshal task [%s] failed, err: %v", key, err)
@@ -59,25 +58,9 @@ func DeleteTaskByKey(key string) error {
 	return nil
 }
 
-// 推送测试任务
-func PushTestTask() {
-	ids := []int64{10010, 10011, 10012, 10013}
-
-	for _, id := range ids {
-		dao.RDB.LPush("ci_task_ids", id)
-		task := bean.Task{
-			TaskId:   id,
-			TaskType: "AAA",
-			TaskFile: "xx.xx",
-		}
-		taskJson, _ := json.Marshal(task)
-		dao.RDB.Set(fmt.Sprintf("ci_task_%d", id), taskJson, 0).Err()
-	}
-}
-
 // 根据 id 获取手机信息
 func FindPhoneById(id string) (*bean.Phone, error) {
-	sqlStr := "SELECT id, client, test_type, secret, update_time FROM phone WHERE id = ?"
+	sqlStr := "SELECT * FROM phone WHERE id = ?"
 	var phone bean.Phone
 	err := dao.DB.Get(&phone, sqlStr, id)
 	if err != nil {
@@ -89,9 +72,8 @@ func FindPhoneById(id string) (*bean.Phone, error) {
 
 // 存入手机信息
 func InsertPhone(phone *bean.Phone) error {
-	log.Printf("%#v", phone)
-	sqlStr := "INSERT INTO phone(id, client, test_type, secret, update_time) VALUES (?, ?, ?, ?, ?)"
-	_, err := dao.DB.Exec(sqlStr, phone.Id, phone.Client, phone.TestType, phone.Secret, phone.UpdateTime)
+	sqlStr := "INSERT INTO phone(id, client, test_type, secret, phone_type, phone_edition, update_time) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	_, err := dao.DB.Exec(sqlStr, phone.Id, phone.Client, phone.TestType, phone.Secret, phone.PhoneType, phone.PhoneEdition, phone.UpdateTime)
 	if err != nil {
 		log.Printf("insert phone failed, err: %v", err)
 		return err

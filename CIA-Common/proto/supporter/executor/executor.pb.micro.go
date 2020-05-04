@@ -37,7 +37,6 @@ type SupporterExecutorService interface {
 	FindTaskKey(ctx context.Context, in *FindTaskKeyReq, opts ...client.CallOption) (*FindTaskKeyResp, error)
 	FindTaskByKey(ctx context.Context, in *FindTaskByKeyReq, opts ...client.CallOption) (*FindTaskByKeyResp, error)
 	DeleteTaskByKey(ctx context.Context, in *DeleteTaskByKeyReq, opts ...client.CallOption) (*DeleteTaskByKeyResp, error)
-	PushTestTask(ctx context.Context, in *PushTestTaskReq, opts ...client.CallOption) (*PushTestTaskResp, error)
 	InsertPhone(ctx context.Context, in *InsertPhoneReq, opts ...client.CallOption) (*InsertPhoneResp, error)
 	FindClientByIp(ctx context.Context, in *FindClientByIpReq, opts ...client.CallOption) (*FindClientByIpResp, error)
 }
@@ -90,16 +89,6 @@ func (c *supporterExecutorService) DeleteTaskByKey(ctx context.Context, in *Dele
 	return out, nil
 }
 
-func (c *supporterExecutorService) PushTestTask(ctx context.Context, in *PushTestTaskReq, opts ...client.CallOption) (*PushTestTaskResp, error) {
-	req := c.c.NewRequest(c.name, "SupporterExecutor.PushTestTask", in)
-	out := new(PushTestTaskResp)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *supporterExecutorService) InsertPhone(ctx context.Context, in *InsertPhoneReq, opts ...client.CallOption) (*InsertPhoneResp, error) {
 	req := c.c.NewRequest(c.name, "SupporterExecutor.InsertPhone", in)
 	out := new(InsertPhoneResp)
@@ -126,7 +115,6 @@ type SupporterExecutorHandler interface {
 	FindTaskKey(context.Context, *FindTaskKeyReq, *FindTaskKeyResp) error
 	FindTaskByKey(context.Context, *FindTaskByKeyReq, *FindTaskByKeyResp) error
 	DeleteTaskByKey(context.Context, *DeleteTaskByKeyReq, *DeleteTaskByKeyResp) error
-	PushTestTask(context.Context, *PushTestTaskReq, *PushTestTaskResp) error
 	InsertPhone(context.Context, *InsertPhoneReq, *InsertPhoneResp) error
 	FindClientByIp(context.Context, *FindClientByIpReq, *FindClientByIpResp) error
 }
@@ -136,7 +124,6 @@ func RegisterSupporterExecutorHandler(s server.Server, hdlr SupporterExecutorHan
 		FindTaskKey(ctx context.Context, in *FindTaskKeyReq, out *FindTaskKeyResp) error
 		FindTaskByKey(ctx context.Context, in *FindTaskByKeyReq, out *FindTaskByKeyResp) error
 		DeleteTaskByKey(ctx context.Context, in *DeleteTaskByKeyReq, out *DeleteTaskByKeyResp) error
-		PushTestTask(ctx context.Context, in *PushTestTaskReq, out *PushTestTaskResp) error
 		InsertPhone(ctx context.Context, in *InsertPhoneReq, out *InsertPhoneResp) error
 		FindClientByIp(ctx context.Context, in *FindClientByIpReq, out *FindClientByIpResp) error
 	}
@@ -161,10 +148,6 @@ func (h *supporterExecutorHandler) FindTaskByKey(ctx context.Context, in *FindTa
 
 func (h *supporterExecutorHandler) DeleteTaskByKey(ctx context.Context, in *DeleteTaskByKeyReq, out *DeleteTaskByKeyResp) error {
 	return h.SupporterExecutorHandler.DeleteTaskByKey(ctx, in, out)
-}
-
-func (h *supporterExecutorHandler) PushTestTask(ctx context.Context, in *PushTestTaskReq, out *PushTestTaskResp) error {
-	return h.SupporterExecutorHandler.PushTestTask(ctx, in, out)
 }
 
 func (h *supporterExecutorHandler) InsertPhone(ctx context.Context, in *InsertPhoneReq, out *InsertPhoneResp) error {

@@ -39,7 +39,7 @@ func Register(service micro.Service, cfg *config.TaskConfig) error {
 
 // 获取任务 key
 func (se *SupporterExecutor) FindTaskKey(ctx context.Context, req *pb.FindTaskKeyReq, resp *pb.FindTaskKeyResp) (err error) {
-	idsKey := fmt.Sprintf("%s_ids", taskCfg.Key)
+	idsKey := fmt.Sprintf("%s_ids_%s", taskCfg.Key, req.Secret)
 	id, err := executor.PopId(idsKey)
 	if err != nil {
 		if "redis: nil" == err.Error() {
@@ -49,7 +49,7 @@ func (se *SupporterExecutor) FindTaskKey(ctx context.Context, req *pb.FindTaskKe
 		log.Printf("find task key [%s] failed, err: %v", idsKey, err)
 		return err
 	}
-	resp.Key = fmt.Sprintf("%s_%d", taskCfg.Key, id)
+	resp.Key = fmt.Sprintf("%s_%s_%d", taskCfg.Key, req.Secret, id)
 	log.Printf("find task key [%s] success", idsKey)
 	return nil
 }
@@ -86,24 +86,21 @@ func (se *SupporterExecutor) DeleteTaskByKey(ctx context.Context, req *pb.Delete
 	return nil
 }
 
-// 推送测试任务
-func (se *SupporterExecutor) PushTestTask(ctx context.Context, req *pb.PushTestTaskReq, resp *pb.PushTestTaskResp) (err error) {
-	executor.PushTestTask()
-	return nil
-}
-
 // 存入手机信息
 func (se *SupporterExecutor) InsertPhone(ctx context.Context, req *pb.InsertPhoneReq, resp *pb.InsertPhoneResp) (err error) {
 	for _, phone := range req.Phones {
 		tempPhone, err := executor.FindPhoneById(phone.Id)
 		if err != nil {
 			if "sql: no rows in result set" == err.Error() {
+				log.Printf("%#v", phone)
 				err = executor.InsertPhone(&bean.Phone{
-					Id:         phone.Id,
-					Client:     phone.Client,
-					TestType:   phone.TestType,
-					Secret:     phone.Secret,
-					UpdateTime: time.Now(),
+					Id:           phone.Id,
+					Client:       phone.Client,
+					TestType:     phone.TestType,
+					Secret:       phone.Secret,
+					PhoneType:    phone.PhoneType,
+					PhoneEdition: phone.PhoneEdition,
+					UpdateTime:   time.Now(),
 				})
 				if err != nil {
 					log.Printf("insert phone %s failed, err: %v", phone.Id, err)

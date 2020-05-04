@@ -8,6 +8,7 @@ import (
 	"moriaty.com/cia/cia-supporter/dao"
 	"moriaty.com/cia/cia-supporter/service/executor"
 	"moriaty.com/cia/cia-supporter/service/filecenter"
+	"moriaty.com/cia/cia-supporter/service/manager"
 	"moriaty.com/cia/cia-supporter/service/publisher"
 )
 
@@ -43,10 +44,10 @@ func main() {
 	log.Println("init mysql success")
 
 	// 初始化 redis
-	//err = dao.InitRedis(&cfg.RedisConfig)
-	//if err != nil {
-	//	log.Fatalf("init redis failed, err: %v", err)
-	//}
+	err = dao.InitRedis(&cfg.RedisConfig)
+	if err != nil {
+		log.Fatalf("init redis failed, err: %v", err)
+	}
 	log.Println("init redis success")
 
 	// 启动服务
@@ -71,6 +72,12 @@ func main() {
 	err = publisher.Register(server)
 	if err != nil {
 		log.Fatalf("register service publisher failed, err: %v", err)
+	}
+
+	// 注册任务管理者服务
+	err = manager.Register(server)
+	if err != nil {
+		log.Fatalf("register service manager failed, err: %v", err)
 	}
 
 	// 服务运行

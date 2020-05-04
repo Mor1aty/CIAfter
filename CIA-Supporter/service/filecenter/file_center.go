@@ -37,7 +37,6 @@ func (sfc *SupporterFileCenter) InsertFile(ctx context.Context, req *pb.InsertFi
 	id, err := filecenter.InsertFile(&bean.File{
 		FileName:     req.File.FileName,
 		FileLocation: req.File.FileLocation,
-		Task:         req.File.Task,
 		Secret:       req.File.Secret,
 		CreateTime:   time.Now(),
 	})
@@ -66,7 +65,6 @@ func (sfc *SupporterFileCenter) FindFileById(ctx context.Context, req *pb.FindFi
 		Id:           file.Id,
 		FileName:     file.FileName,
 		FileLocation: file.FileLocation,
-		Task:         file.Task,
 		Secret:       file.Secret,
 		CreateTime:   file.CreateTime.Format(constant.DATE_TYPE_01),
 	}
@@ -92,7 +90,6 @@ func (sfc *SupporterFileCenter) FindFileByTaskAndSecret(ctx context.Context, req
 			Id:           tmpFile.Id,
 			FileName:     tmpFile.FileName,
 			FileLocation: tmpFile.FileLocation,
-			Task:         tmpFile.Task,
 			Secret:       tmpFile.Secret,
 			CreateTime:   tmpFile.CreateTime.Format(constant.DATE_TYPE_01),
 		}

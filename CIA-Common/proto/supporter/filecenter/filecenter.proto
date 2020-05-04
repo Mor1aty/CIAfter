@@ -7,9 +7,8 @@ message File {
     int64 id = 1;
     string fileName = 2;
     string fileLocation = 3;
-    int64 task = 4;
-    string secret = 5;
-    string createTime = 6;
+    string secret = 4;
+    string createTime = 5;
 }
 
 service SupporterFileCenter {

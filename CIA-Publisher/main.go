@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/micro/go-micro"
+	"log"
 	"moriaty.com/cia/cia-publisher/service"
 )
 
@@ -29,4 +30,9 @@ func main() {
 	service.Init(server)
 	service.PullHandleApk()
 	select {}
+}
+
+func init() {
+	log.SetPrefix("【CIA-Publisher】")
+	log.SetFlags(log.Lshortfile)
 }

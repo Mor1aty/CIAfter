@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package manager;
+
+// 任务结构体
+message Task {
+    int64 id = 1;
+    string secret = 2;
+    string testType = 3;
+    string client = 4;
+    string desc = 5;
+    File file = 6;
+    int32 status = 7;
+    int32 result = 8;
+    string resultDesc = 9;
+    string createTime = 10;
+    string startTime = 11;
+    string endTime = 12;
+}
+
+// 文件结构体
+message File {
+    int64 id = 1;
+    string fileName = 2;
+    string fileLocation = 3;
+    string secret = 4;
+    string createTime = 5;
+}
+
+service SupporterManager {
+    rpc FindTaskBySecret (FindTaskBySecretReq) returns (FindTaskBySecretResp) {
+    }
+    rpc InsertTask (InsertTaskReq) returns (InsertTaskResp) {
+    }
+    rpc PushTask (PushTaskReq) returns (PushTaskResp) {
+    }
+}
+
+// 根据权限 id 获取任务
+message FindTaskBySecretReq {
+    string secret = 1;
+}
+
+message FindTaskBySecretResp {
+    repeated Task tasks = 1;
+}
+
+// 插入任务
+message InsertTaskReq {
+    string secret = 1;
+    string testType = 2;
+    string desc = 3;
+    int64 file = 4;
+}
+
+message InsertTaskResp {
+    int64 id = 1;
+}
+
+// 推送任务
+message PushTaskReq {
+    int64 taskId = 1;
+    string taskType = 2;
+    string taskFile = 3;
+    string secret = 4;
+}
+
+message PushTaskResp {
+}

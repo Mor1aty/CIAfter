@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/micro/go-micro"
+	"gopkg.in/ini.v1"
 	"log"
+	"moriaty.com/cia/cia-executor/config"
 	"moriaty.com/cia/cia-executor/service"
 )
 
@@ -24,6 +26,14 @@ import (
 */
 
 func main() {
+	// 加载配置文件
+	cfg := new(config.ExecutorConfig)
+	err := ini.MapTo(&cfg, "./config/config.ini")
+	if err != nil {
+		log.Fatalf("load ini failed, err: %v", err)
+	}
+	log.Println("config success")
+
 	// 启动服务
 	server := micro.NewService(
 		micro.Name("executor"),
@@ -31,7 +41,7 @@ func main() {
 	server.Init()
 
 	// 初始化 service
-	err := service.Init(server)
+	err = service.Init(server, &cfg.ClientConfig)
 	if err != nil {
 		log.Fatalf("init service failed, err: %v", err)
 	}
@@ -40,13 +50,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("init phone failed, err: %v", err)
 	}
+	log.Println("init phone success")
 
-	service.PushTestTask()
-	log.Println("push data success")
+	//go service.ConsumeTask()
 
-	go service.ConsumeTask()
-
-	select {}
+	// select {}
 }
 
 func init() {

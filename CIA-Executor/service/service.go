@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/micro/go-micro"
 	"io/ioutil"
 	"log"
 	supporter "moriaty.com/cia/cia-common/proto/supporter/executor"
+	"moriaty.com/cia/cia-executor/bean"
+	"moriaty.com/cia/cia-executor/config"
 	"net"
 	"os/exec"
 	"strings"
@@ -21,11 +24,16 @@ import (
  * 任务执行者服务 service
  */
 
-var se supporter.SupporterExecutorService
+var (
+	ses           supporter.SupporterExecutorService
+	currentPhones = make([]*bean.Phone, 0)
+	clientCfg     *config.ClientConfig
+)
 
 // 初始化 service
-func Init(server micro.Service) error {
-	se = supporter.NewSupporterExecutorService("supporter", server.Client())
+func Init(server micro.Service, cfg *config.ClientConfig) error {
+	ses = supporter.NewSupporterExecutorService("supporter", server.Client())
+	clientCfg = cfg
 	return nil
 }
 
@@ -35,7 +43,7 @@ func ConsumeTask() {
 	defer log.Printf("consume task end")
 	time.Sleep(time.Second * 2)
 	for {
-		findTaskKeyResp, err := se.FindTaskKey(context.TODO(), &supporter.FindTaskKeyReq{})
+		findTaskKeyResp, err := ses.FindTaskKey(context.TODO(), &supporter.FindTaskKeyReq{Secret: clientCfg.Secret})
 		if err != nil {
 			log.Printf("call supporter FindTaskKey failed, err: %v", err)
 			return
@@ -43,7 +51,7 @@ func ConsumeTask() {
 		if findTaskKeyResp.Key == "" {
 			log.Printf("no task to consume")
 		} else {
-			findTaskByKeyResp, err := se.FindTaskByKey(context.TODO(), &supporter.FindTaskByKeyReq{Key: findTaskKeyResp.Key})
+			findTaskByKeyResp, err := ses.FindTaskByKey(context.TODO(), &supporter.FindTaskByKeyReq{Key: findTaskKeyResp.Key})
 			if err != nil {
 				log.Printf("call supporter FindTaskByKey failed, err: %v", err)
 				return
@@ -52,7 +60,24 @@ func ConsumeTask() {
 				log.Printf("get task by key [%s] not found", findTaskKeyResp.Key)
 			} else {
 				log.Printf("consume task [%d] start", findTaskByKeyResp.Task.TaskId)
-				time.Sleep(time.Second * 10)
+				var currentPhone *bean.Phone = nil
+				for {
+					for _, phone := range currentPhones {
+						if phone.IsOccupy == false {
+							currentPhone = phone
+							break
+						}
+					}
+					if currentPhone == nil {
+						log.Printf("phones are all occupied")
+					} else {
+						break
+					}
+					time.Sleep(time.Second * 10)
+				}
+				// 解压
+				time.Sleep(time.Second * 5)
+
 				log.Printf("consume task [%d] end", findTaskByKeyResp.Task.TaskId)
 			}
 			err = deleteTask(findTaskKeyResp.Key)
@@ -67,16 +92,11 @@ func ConsumeTask() {
 
 // 删除任务
 func deleteTask(key string) error {
-	_, err := se.DeleteTaskByKey(context.TODO(), &supporter.DeleteTaskByKeyReq{Key: key})
+	_, err := ses.DeleteTaskByKey(context.TODO(), &supporter.DeleteTaskByKeyReq{Key: key})
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-// 推送任务
-func PushTestTask() {
-	se.PushTestTask(context.TODO(), &supporter.PushTestTaskReq{})
 }
 
 // 初始化当前设备的手机信息
@@ -87,10 +107,15 @@ func InitPhone() error {
 		return err
 	}
 
-	findClientByIpResp, err := se.FindClientByIp(context.TODO(), &supporter.FindClientByIpReq{Ip: ip})
+	findClientByIpResp, err := ses.FindClientByIp(context.TODO(), &supporter.FindClientByIpReq{Ip: ip})
 	if err != nil {
 		log.Printf("call supporter FindClientByIp failed, err: %v", err)
 		return err
+	}
+
+	if findClientByIpResp.Client == nil {
+		log.Printf("client ip [%s] not found", ip)
+		return errors.New("current client is not registered")
 	}
 
 	cmd := exec.Command("adb", "devices")
@@ -99,12 +124,15 @@ func InitPhone() error {
 		log.Printf("adb std out failed, err: %v", err)
 		return err
 	}
+
 	defer stdout.Close()
+
 	err = cmd.Start()
 	if err != nil {
 		log.Printf("adb exec out failed, err: %v", err)
 		return err
 	}
+
 	out, err := ioutil.ReadAll(stdout)
 	if err != nil {
 		log.Printf("adb out read failed, err: %v", err)
@@ -118,10 +146,17 @@ func InitPhone() error {
 		temp := strings.Split(s, "\t")
 		if len(temp) == 2 {
 			phones = append(phones, &supporter.Phone{
-				Id:       temp[0],
-				Client:   findClientByIpResp.Client.Ip,
-				TestType: findClientByIpResp.Client.TestType,
-				Secret:   findClientByIpResp.Client.Secret,
+				Id:           temp[0],
+				Client:       findClientByIpResp.Client.Ip,
+				TestType:     findClientByIpResp.Client.TestType,
+				Secret:       findClientByIpResp.Client.Secret,
+				PhoneType:    clientCfg.PhoneType,
+				PhoneEdition: clientCfg.PhoneEdition,
+			})
+			currentPhones = append(currentPhones, &bean.Phone{
+				Id:      temp[0],
+				Type:    clientCfg.PhoneType,
+				Edition: clientCfg.PhoneEdition,
 			})
 		}
 	}
@@ -130,7 +165,7 @@ func InitPhone() error {
 		return nil
 	}
 
-	_, err = se.InsertPhone(context.TODO(), &supporter.InsertPhoneReq{Phones: phones})
+	_, err = ses.InsertPhone(context.TODO(), &supporter.InsertPhoneReq{Phones: phones})
 	if err != nil {
 		log.Printf("call supporter InsertPhone failed, err: %v", err)
 		return err

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package manager;
+
+service Manager {
+    rpc CreateTask (CreateTaskReq) returns (CreateTaskResp) {
+    }
+}
+
+// 创建任务
+message CreateTaskReq {
+    string secret = 1;
+    string testType = 2;
+    string desc = 3;
+    string fileName = 4;
+    string fileLocation = 5;
+}
+
+message CreateTaskResp {
+    int64 id = 1;
+}

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"github.com/micro/go-micro"
 	"log"
-	"moriaty.com/cia/cia-common/proto/supporter/publisher"
+	"moriaty.com/cia/cia-manager/service"
 )
 
 /**
@@ -17,47 +15,33 @@ import (
  * CIA-Manager
  */
 /**
-	任务管理者 CIA-Manager
-  	1. 提供生成机制
-  	2. 生成任务
-  	3. 将任务分发到任务容器，方便任务执行者执行任务
-  	4. 提供任务结果获取机制
+1、生成任务
+  1. 组织任务信息
+  2. 任务信息存入数据库
+  3. 任务信息存入任务容器
+2、任务信息
+  1. 获取任务执行信息
+  2. 获取任务执行结果
 */
 
 func main() {
+	// 启动服务
 	server := micro.NewService(
 		micro.Name("manager"),
 	)
 	server.Init()
 
-	sp := publisher.NewSupporterPublisherService("supporter", server.Client())
-	findAllBusinessResp, err := sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{All: true})
+	// 注册任务管理者服务
+	err := service.Register(server)
 	if err != nil {
-		log.Printf("call supporter publisher failed, err: %v", err)
+		log.Fatalf("register service failed, err: %v", err)
 	}
-	for _, business := range findAllBusinessResp.Businesses {
-		fmt.Printf("%#v", business)
-	}
-	fmt.Println("--------------------------------------------")
 
-	findAllBusinessResp, err = sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{IsStop: true})
-	if err != nil {
-		log.Printf("call supporter publisher failed, err: %v", err)
+	// 服务运行
+	err = server.Run()
+	if err := server.Run(); err != nil {
+		log.Fatalf("run manager failed, err: %v", err)
 	}
-	for _, business := range findAllBusinessResp.Businesses {
-		fmt.Printf("%#v\n", business)
-	}
-	fmt.Println("--------------------------------------------")
-
-	findAllBusinessResp, err = sp.FindAllBusiness(context.TODO(), &publisher.FindAllBusinessReq{})
-	if err != nil {
-		log.Printf("call supporter publisher failed, err: %v", err)
-	}
-	for _, business := range findAllBusinessResp.Businesses {
-		fmt.Printf("%#v\n", business)
-	}
-	fmt.Println("--------------------------------------------")
-
 }
 
 func init() {

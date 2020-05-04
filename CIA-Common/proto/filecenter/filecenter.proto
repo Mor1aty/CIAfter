@@ -23,11 +23,12 @@ service FileCenter {
 message UploadReq {
     string fileName = 1;
     string tempFileLocation = 2;
-    int64 task = 3;
-    string secret = 4;
+    string secret = 3;
 }
 
 message UploadResp {
+    int64 id = 1;
+    string fileLocation = 2;
 }
 
 // 根据 id 获取文件
