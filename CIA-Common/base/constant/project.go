@@ -14,15 +14,20 @@ const (
 	/**
 	 * 临时文件位置
 	 */
-	TEMP_FILE_LOCATION = "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\temp\\"
-
-	/**
-	 * 测试脚本位置
-	 */
-	TEST_SCRIPTS_LOCATION = "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\scripts\\"
+	TEMP_FILE_LOCATION = "D:\\File\\dissertation\\CIAfter\\temp\\"
 
 	/**
 	 * 文件位置
 	 */
-	FILE_LOCATION = "D:\\File\\基于 CI 的 APP 自动化测试系统\\CIAfter\\file\\"
+	FILE_LOCATION = "D:\\File\\dissertation\\CIAfter\\file\\"
+
+	/**
+	 * 测试脚本位置
+	 */
+	TEST_SCRIPTS_LOCATION = FILE_LOCATION + "scripts\\"
+
+	/**
+	 * 结果文件位置
+	 */
+	RESULT_FILE_LOCATION = FILE_LOCATION + "result\\"
 )

@@ -19,7 +19,7 @@ pkg/
 
 /file/*
 !/file/scripts/
-!/file/.gitkeep
+!/file/results/.gitkeep
 
 /temp/*
 !/temp/.gitkeep

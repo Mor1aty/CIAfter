@@ -38,6 +38,10 @@ service SupporterExecutor {
     }
     rpc FindClientByIp (FindClientByIpReq) returns (FindClientByIpResp) {
     }
+    rpc UpdateTaskStartById (UpdateTaskStartByIdReq) returns (UpdateTaskStartByIdResp) {
+    }
+    rpc UpdateTaskEndById (UpdateTaskEndByIdReq) returns (UpdateTaskEndByIdResp) {
+    }
 }
 
 // 获取任务 key
@@ -81,4 +85,25 @@ message FindClientByIpReq {
 
 message FindClientByIpResp {
     Client client = 1;
+}
+
+// 更新任务开始信息
+message UpdateTaskStartByIdReq {
+    int64 id = 1;
+    string client = 2;
+}
+
+message UpdateTaskStartByIdResp {
+}
+
+// 更新任务结束信息
+message UpdateTaskEndByIdReq {
+    int64 id = 1;
+    bool isSuccess = 2;
+    string resultDesc = 3;
+    string resultLocation = 4;
+    string resultImageLocation = 5;
+}
+
+message UpdateTaskEndByIdResp {
 }

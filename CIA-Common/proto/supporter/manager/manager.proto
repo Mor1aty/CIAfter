@@ -13,9 +13,11 @@ message Task {
     int32 status = 7;
     int32 result = 8;
     string resultDesc = 9;
-    string createTime = 10;
-    string startTime = 11;
-    string endTime = 12;
+    string resultLocation = 10;
+    string resultImageLocation = 11;
+    string createTime = 12;
+    string startTime = 13;
+    string endTime = 14;
 }
 
 // 文件结构体

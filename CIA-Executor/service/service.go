@@ -6,11 +6,15 @@ import (
 	"github.com/micro/go-micro"
 	"io/ioutil"
 	"log"
+	"moriaty.com/cia/cia-common/base/constant"
 	supporter "moriaty.com/cia/cia-common/proto/supporter/executor"
 	"moriaty.com/cia/cia-executor/bean"
 	"moriaty.com/cia/cia-executor/config"
+	"moriaty.com/cia/cia-executor/handle"
 	"net"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -75,8 +79,43 @@ func ConsumeTask() {
 					}
 					time.Sleep(time.Second * 10)
 				}
-				// 解压
-				time.Sleep(time.Second * 5)
+
+				_, err = ses.UpdateTaskStartById(context.TODO(), &supporter.UpdateTaskStartByIdReq{
+					Id:     findTaskByKeyResp.Task.TaskId,
+					Client: currentPhone.Ip,
+				})
+				if err != nil {
+					log.Printf("call supporter UpdateTaskStartById failed, err: %v", err)
+					return
+				}
+
+				apkFile := findTaskByKeyResp.Task.TaskFile
+				dest, file := filepath.Split(apkFile)
+				testFile := dest + string(os.PathSeparator) + strings.Split(file, ".")[0] + string(os.PathSeparator) + findTaskByKeyResp.Task.TaskType + ".py"
+				result := constant.RESULT_FILE_LOCATION + string(findTaskByKeyResp.Task.TaskId)
+
+				err = handle.Exec(apkFile, testFile, currentPhone.Type, currentPhone.Edition, currentPhone.Id, file, result)
+				isSuccess := false
+				resultDesc := ""
+				if err != nil {
+					log.Printf("exec failed")
+					resultDesc = "执行失败，错误：" + err.Error()
+				} else {
+					log.Printf("exec success")
+					isSuccess = true
+					resultDesc = "执行成功"
+				}
+				_, err := ses.UpdateTaskEndById(context.TODO(), &supporter.UpdateTaskEndByIdReq{
+					Id:                  findTaskByKeyResp.Task.TaskId,
+					IsSuccess:           isSuccess,
+					ResultDesc:          resultDesc,
+					ResultLocation:      apkFile,
+					ResultImageLocation: result,
+				})
+				if err != nil {
+					log.Printf("call supporter UpdateTaskEndById failed, err: %v", err)
+					return
+				}
 
 				log.Printf("consume task [%d] end", findTaskByKeyResp.Task.TaskId)
 			}
@@ -157,6 +196,7 @@ func InitPhone() error {
 				Id:      temp[0],
 				Type:    clientCfg.PhoneType,
 				Edition: clientCfg.PhoneEdition,
+				Ip:      ip,
 			})
 		}
 	}

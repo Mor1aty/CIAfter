@@ -39,6 +39,8 @@ type SupporterExecutorService interface {
 	DeleteTaskByKey(ctx context.Context, in *DeleteTaskByKeyReq, opts ...client.CallOption) (*DeleteTaskByKeyResp, error)
 	InsertPhone(ctx context.Context, in *InsertPhoneReq, opts ...client.CallOption) (*InsertPhoneResp, error)
 	FindClientByIp(ctx context.Context, in *FindClientByIpReq, opts ...client.CallOption) (*FindClientByIpResp, error)
+	UpdateTaskStartById(ctx context.Context, in *UpdateTaskStartByIdReq, opts ...client.CallOption) (*UpdateTaskStartByIdResp, error)
+	UpdateTaskEndById(ctx context.Context, in *UpdateTaskEndByIdReq, opts ...client.CallOption) (*UpdateTaskEndByIdResp, error)
 }
 
 type supporterExecutorService struct {
@@ -109,6 +111,26 @@ func (c *supporterExecutorService) FindClientByIp(ctx context.Context, in *FindC
 	return out, nil
 }
 
+func (c *supporterExecutorService) UpdateTaskStartById(ctx context.Context, in *UpdateTaskStartByIdReq, opts ...client.CallOption) (*UpdateTaskStartByIdResp, error) {
+	req := c.c.NewRequest(c.name, "SupporterExecutor.UpdateTaskStartById", in)
+	out := new(UpdateTaskStartByIdResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *supporterExecutorService) UpdateTaskEndById(ctx context.Context, in *UpdateTaskEndByIdReq, opts ...client.CallOption) (*UpdateTaskEndByIdResp, error) {
+	req := c.c.NewRequest(c.name, "SupporterExecutor.UpdateTaskEndById", in)
+	out := new(UpdateTaskEndByIdResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for SupporterExecutor service
 
 type SupporterExecutorHandler interface {
@@ -117,6 +139,8 @@ type SupporterExecutorHandler interface {
 	DeleteTaskByKey(context.Context, *DeleteTaskByKeyReq, *DeleteTaskByKeyResp) error
 	InsertPhone(context.Context, *InsertPhoneReq, *InsertPhoneResp) error
 	FindClientByIp(context.Context, *FindClientByIpReq, *FindClientByIpResp) error
+	UpdateTaskStartById(context.Context, *UpdateTaskStartByIdReq, *UpdateTaskStartByIdResp) error
+	UpdateTaskEndById(context.Context, *UpdateTaskEndByIdReq, *UpdateTaskEndByIdResp) error
 }
 
 func RegisterSupporterExecutorHandler(s server.Server, hdlr SupporterExecutorHandler, opts ...server.HandlerOption) error {
@@ -126,6 +150,8 @@ func RegisterSupporterExecutorHandler(s server.Server, hdlr SupporterExecutorHan
 		DeleteTaskByKey(ctx context.Context, in *DeleteTaskByKeyReq, out *DeleteTaskByKeyResp) error
 		InsertPhone(ctx context.Context, in *InsertPhoneReq, out *InsertPhoneResp) error
 		FindClientByIp(ctx context.Context, in *FindClientByIpReq, out *FindClientByIpResp) error
+		UpdateTaskStartById(ctx context.Context, in *UpdateTaskStartByIdReq, out *UpdateTaskStartByIdResp) error
+		UpdateTaskEndById(ctx context.Context, in *UpdateTaskEndByIdReq, out *UpdateTaskEndByIdResp) error
 	}
 	type SupporterExecutor struct {
 		supporterExecutor
@@ -156,4 +182,12 @@ func (h *supporterExecutorHandler) InsertPhone(ctx context.Context, in *InsertPh
 
 func (h *supporterExecutorHandler) FindClientByIp(ctx context.Context, in *FindClientByIpReq, out *FindClientByIpResp) error {
 	return h.SupporterExecutorHandler.FindClientByIp(ctx, in, out)
+}
+
+func (h *supporterExecutorHandler) UpdateTaskStartById(ctx context.Context, in *UpdateTaskStartByIdReq, out *UpdateTaskStartByIdResp) error {
+	return h.SupporterExecutorHandler.UpdateTaskStartById(ctx, in, out)
+}
+
+func (h *supporterExecutorHandler) UpdateTaskEndById(ctx context.Context, in *UpdateTaskEndByIdReq, out *UpdateTaskEndByIdResp) error {
+	return h.SupporterExecutorHandler.UpdateTaskEndById(ctx, in, out)
 }

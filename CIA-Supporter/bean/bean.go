@@ -62,18 +62,20 @@ type BusinessTest struct {
 
 // 任务表（task）
 type Task struct {
-	Id         int64     `db:"id"`
-	Secret     string    `db:"secret"`
-	TestType   string    `db:"test_type"`
-	Client     string    `db:"client"`
-	Desc       string    `db:"desc"`
-	File       int64     `db:"file"`
-	Status     int32     `db:"status"`
-	Result     int32     `db:"result"`
-	ResultDesc string    `db:"result_desc"`
-	CreateTime time.Time `db:"create_time"`
-	StartTime  time.Time `db:"start_time"`
-	EndTime    time.Time `db:"end_time"`
+	Id                  int64     `db:"id"`
+	Secret              string    `db:"secret"`
+	TestType            string    `db:"test_type"`
+	Client              string    `db:"client"`
+	Desc                string    `db:"desc"`
+	File                int64     `db:"file"`
+	Status              int32     `db:"status"`
+	Result              int32     `db:"result"`
+	ResultDesc          string    `db:"result_desc"`
+	ResultLocation      string    `db:"result_location"`
+	ResultImageLocation string    `db:"result_image_location"`
+	CreateTime          time.Time `db:"create_time"`
+	StartTime           time.Time `db:"start_time"`
+	EndTime             time.Time `db:"end_time"`
 }
 
 // 任务（redis）

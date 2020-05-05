@@ -71,18 +71,20 @@ func (sm *SupporterManager) FindTaskBySecret(ctx context.Context, req *pb.FindTa
 			}
 		}
 		tasks[index] = &pb.Task{
-			Id:         tmpTask.Id,
-			Secret:     tmpTask.Secret,
-			TestType:   tmpTask.TestType,
-			Client:     tmpTask.Client,
-			Desc:       tmpTask.Desc,
-			File:       file,
-			Status:     tmpTask.Status,
-			Result:     tmpTask.Result,
-			ResultDesc: tmpTask.ResultDesc,
-			CreateTime: tmpTask.CreateTime.Format(constant.DATE_TYPE_01),
-			StartTime:  tmpTask.StartTime.Format(constant.DATE_TYPE_01),
-			EndTime:    tmpTask.EndTime.Format(constant.DATE_TYPE_01),
+			Id:                  tmpTask.Id,
+			Secret:              tmpTask.Secret,
+			TestType:            tmpTask.TestType,
+			Client:              tmpTask.Client,
+			Desc:                tmpTask.Desc,
+			File:                file,
+			Status:              tmpTask.Status,
+			Result:              tmpTask.Result,
+			ResultDesc:          tmpTask.ResultDesc,
+			ResultLocation:      tmpTask.ResultLocation,
+			ResultImageLocation: tmpTask.ResultImageLocation,
+			CreateTime:          tmpTask.CreateTime.Format(constant.DATE_TYPE_01),
+			StartTime:           tmpTask.StartTime.Format(constant.DATE_TYPE_01),
+			EndTime:             tmpTask.EndTime.Format(constant.DATE_TYPE_01),
 		}
 	}
 	resp.Tasks = tasks

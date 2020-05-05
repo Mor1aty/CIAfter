@@ -6,6 +6,7 @@ import (
 	"moriaty.com/cia/cia-supporter/bean"
 	"moriaty.com/cia/cia-supporter/dao"
 	"strconv"
+	"time"
 )
 
 /**
@@ -102,4 +103,26 @@ func FindClientByIp(ip string) (*bean.Client, error) {
 		return nil, err
 	}
 	return &client, nil
+}
+
+// 更新任务开始信息
+func UpdateTaskStartById(id int64, client string) error {
+	sqlStr := "UPDATE task SET client = ?, status = 1, start_time = ?  WHERE id = ?"
+	_, err := dao.DB.Exec(sqlStr, client, time.Now(), id)
+	if err != nil {
+		log.Printf("update task (%d) start failed, err: %v", id, err)
+		return err
+	}
+	return nil
+}
+
+// 更新任务结束信息
+func UpdateTaskEndById(id int64, result int, resultDesc, resultLocation, resultImageLocation string) error {
+	sqlStr := "UPDATE task SET status = 2, result = ?, result_desc = ?, result_location = ?, result_image_location = ?, end_time = ?  WHERE id = ?"
+	_, err := dao.DB.Exec(sqlStr, result, resultDesc, resultLocation, resultImageLocation, time.Now(), id)
+	if err != nil {
+		log.Printf("update task (%d) end failed, err: %v", id, err)
+		return err
+	}
+	return nil
 }

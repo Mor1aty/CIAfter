@@ -10,6 +10,6 @@ package bean
  */
 
 type Phone struct {
-	Id, Type, Edition string
-	IsOccupy          bool
+	Id, Type, Edition, Ip string
+	IsOccupy              bool
 }

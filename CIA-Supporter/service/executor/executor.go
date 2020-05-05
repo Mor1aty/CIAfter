@@ -145,3 +145,27 @@ func (se *SupporterExecutor) FindClientByIp(ctx context.Context, req *pb.FindCli
 	log.Printf("find client by ip [%s] success", req.Ip)
 	return
 }
+
+// 更新任务开始信息
+func (se *SupporterExecutor) UpdateTaskStartById(ctx context.Context, req *pb.UpdateTaskStartByIdReq, resp *pb.UpdateTaskStartByIdResp) (err error) {
+	err = executor.UpdateTaskStartById(req.Id, req.Client)
+	if err != nil {
+		log.Printf("upload task [%d] start failed, err: %v", req.Id, err)
+		return err
+	}
+	return nil
+}
+
+// 更新任务结束信息
+func (se *SupporterExecutor) UpdateTaskEndById(ctx context.Context, req *pb.UpdateTaskEndByIdReq, resp *pb.UpdateTaskEndByIdResp) (err error) {
+	result := 1
+	if req.IsSuccess {
+		result = 0
+	}
+	err = executor.UpdateTaskEndById(req.Id, result, req.ResultDesc, req.ResultLocation, req.ResultImageLocation)
+	if err != nil {
+		log.Printf("upload task [%d] end failed, err: %v", req.Id, err)
+		return err
+	}
+	return nil
+}

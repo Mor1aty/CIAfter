@@ -129,20 +129,22 @@ CREATE TABLE `business_test`(
 
 ## 任务表（task）
 
-|   字段名    |       类型       |             约束             |                            描述                            |
-| :---------: | :--------------: | :--------------------------: | :--------------------------------------------------------: |
-|     id      | bigint unsigned  |           自增主键           |                             id                             |
-|   secret    |   varchar(50)    | 外键非空，`业务表`(`secret`) |                          权限 id                           |
-|  test_type  |   varchar(50)    |             非空             |                          测试类型                          |
-|   client    |   varchar(20)    |    外键，`客户端表`(`ip`)    |                           客户端                           |
-|    desc     |       text       |             非空             |                          任务描述                          |
-|    file     | bigint unsigned  |   外键非空，`文件表`(`id`)   |                          任务文件                          |
-|   status    | tinyint unsigned |             非空             | 任务状态：0 为任务创建中，1 为任务执行中，2 为任务执行结束 |
-|   result    | tinyint unsigned |                              |            任务结果：0 为执行成功，1 为执行失败            |
-| result_desc |       text       |                              |                        任务结果描述                        |
-| create_time |     datetime     |             非空             |                          创建时间                          |
-| start_time  |     datetime     |                              |                          开始时间                          |
-|  end_time   |     datetime     |                              |                          结束时间                          |
+|        字段名         |       类型       |             约束             |                           描述                           |
+| :-------------------: | :--------------: | :--------------------------: | :------------------------------------------------------: |
+|          id           | bigint unsigned  |           自增主键           |                            id                            |
+|        secret         |   varchar(50)    | 外键非空，`业务表`(`secret`) |                         权限 id                          |
+|       test_type       |   varchar(50)    |             非空             |                         测试类型                         |
+|        client         |   varchar(20)    |    外键，`客户端表`(`ip`)    |                          客户端                          |
+|         desc          |       text       |             非空             |                         任务描述                         |
+|         file          | bigint unsigned  |   外键非空，`文件表`(`id`)   |                         任务文件                         |
+|        status         | tinyint unsigned |             非空             | 任务状态：0 为任务创建，1 为任务执行中，2 为任务执行结束 |
+|        result         | tinyint unsigned |                              |           任务结果：0 为执行成功，1 为执行失败           |
+|      result_desc      |       text       |                              |                       任务结果描述                       |
+|    result_location    |   varchar(200)   |                              |                       任务结果位置                       |
+| result_image_location |   varchar(200)   |                              |                     任务结果截图位置                     |
+|      create_time      |     datetime     |             非空             |                         创建时间                         |
+|      start_time       |     datetime     |                              |                         开始时间                         |
+|       end_time        |     datetime     |                              |                         结束时间                         |
 
 ```mysql
 CREATE TABLE `task`(
@@ -155,6 +157,8 @@ CREATE TABLE `task`(
     `status` TINYINT UNSIGNED NOT NULL,
     `result` TINYINT UNSIGNED,
     `result_desc` TEXT,
+    `result_location` VARCHAR(200),
+    `result_image_location` VARCHAR(200),
     `create_time` DATETIME NOT NULL,
     `start_time` DATETIME,
     `end_time` DATETIME,
@@ -235,6 +239,8 @@ CREATE TABLE `task`(
     `status` TINYINT UNSIGNED NOT NULL,
     `result` TINYINT UNSIGNED,
     `result_desc` TEXT,
+    `result_location` VARCHAR(200),
+    `result_image_location` VARCHAR(200),
     `create_time` DATETIME NOT NULL,
     `start_time` DATETIME,
     `end_time` DATETIME,
